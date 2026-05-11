@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rig Bridge — OpenHamClock Manual</title>
-  <meta name="description" content="Connecting your radio to OpenHamClock with Rig Bridge: click any spot to tune automatically. Setup for Yaesu, Icom, Kenwood, Elecraft, and SDR.">
+  <meta name="description" content="Connecting your radio to OpenHamClock with Rig Bridge: installation, radio setup, and how OpenHamClock talks to rig-bridge over HTTP.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="assets/css/style.css">
@@ -31,234 +31,471 @@
           </div>
           <span class="badge badge-feature">Feature</span>
         </div>
-        <p class="page-tagline">Click any DX spot, POTA activator, or satellite frequency and your radio tunes there instantly. Rig Bridge connects OpenHamClock to your transceiver over USB serial, CI-V, or network.</p>
+        <p class="page-tagline">Rig Bridge is a separate application that sits between your radio and OpenHamClock. Click any spot and your radio tunes automatically — over USB, network, or the cloud.</p>
       </header>
 
-      <!-- ── What Rig Bridge does ────────────────────────── -->
-      <h2>What Rig Bridge Does</h2>
+      <!-- ── What Rig Bridge is ──────────────────────────── -->
+      <h2>What Rig Bridge Is</h2>
       <p>
-        Rig Bridge is OpenHamClock's rig control layer. Once connected, every frequency
-        shown in the dashboard becomes a clickable link to your radio. Click a DX spot on
-        14.025 MHz CW and your transceiver jumps there in CW mode — without you touching
-        the VFO. Click a POTA activator on 7.225 MHz SSB and the radio switches to 40 m LSB.
-        Click a WSJT-X spot and the radio moves to the FT8 dial frequency in USB.
+        <strong>Rig Bridge</strong> is a small, plugin-based bridge application that runs on the
+        computer physically connected to your radio. It translates between OpenHamClock and your
+        transceiver, handling the low-level CAT, CI-V, or network protocol of each radio make and model.
       </p>
       <p>
-        The Rig Control panel also shows your radio's <strong>current frequency, mode, and VFO</strong>
-        in real time — a permanent readout visible from across the shack, even on a wall-mounted display.
-      </p>
-
-      <!-- ── Supported radios ───────────────────────────── -->
-      <h2>Supported Radios</h2>
-      <p>
-        Rig Bridge includes <strong>22 radio plugins</strong> covering all major brands.
-        If your radio supports any of these interfaces, it will work:
+        Once running, Rig Bridge exposes a simple HTTP API on <strong>port 5555</strong>.
+        OpenHamClock's browser interface connects to that API and, from that moment, every frequency
+        link in the dashboard — a DX spot, a POTA activator, a WSJT-X decode — becomes a one-click
+        tune command sent directly to your radio.
       </p>
 
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Protocol</th><th>Supported radios (examples)</th></tr></thead>
-          <tbody>
-            <tr>
-              <td><strong>Yaesu CAT</strong></td>
-              <td>FT-991A, FT-710, FT-DX10, FT-DX101, FT-DX3000, FT-817/818, FT-857, FT-897, FT-450, FT-2000, FT-5000 and more</td>
-            </tr>
-            <tr>
-              <td><strong>Icom CI-V</strong></td>
-              <td>IC-7300, IC-7610, IC-7700, IC-7800, IC-9700, IC-705, IC-7100, IC-7200, IC-7410, IC-746, IC-756, IC-7000 and more</td>
-            </tr>
-            <tr>
-              <td><strong>Kenwood</strong></td>
-              <td>TS-890S, TS-590SG, TS-590S, TS-570, TS-2000, TH-D74 and more</td>
-            </tr>
-            <tr>
-              <td><strong>Elecraft</strong></td>
-              <td>K4, K3, K3S, KX3, KX2</td>
-            </tr>
-            <tr>
-              <td><strong>TCI (network)</strong></td>
-              <td>Expert Electronics ExpertSDR2, Afedri SDR, any TCI-compatible SDR receiver</td>
-            </tr>
-            <tr>
-              <td><strong>FlexRadio SmartSDR</strong></td>
-              <td>FLEX-6300, FLEX-6400, FLEX-6500, FLEX-6600, FLEX-6700</td>
-            </tr>
-            <tr>
-              <td><strong>Hamlib (generic)</strong></td>
-              <td>Hundreds of radios via the Hamlib rigctld daemon</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="figure">
+        <div class="figure-placeholder">
+          <span class="placeholder-icon">🔗</span>
+          <span class="placeholder-label">Diagram: Rig Bridge connection flow</span>
+          <span style="font-size:0.75rem;opacity:0.5;">assets/img/screenshots/rig-bridge-flow.png</span>
+        </div>
+        <div class="figure-caption">
+          How the pieces connect: your radio talks to Rig Bridge over USB or LAN;
+          Rig Bridge exposes an HTTP API on port 5555;
+          OpenHamClock's browser connects to that API to read state and send tune commands.
+        </div>
       </div>
+
+      <!-- ── How OHC connects to rig-bridge ────────────── -->
+      <h2>How OpenHamClock Connects to Rig Bridge</h2>
+      <p>
+        OpenHamClock talks to Rig Bridge over a standard HTTP connection — the same way your browser
+        loads any web page. The connection has two parts:
+      </p>
+
+      <div class="info-box">
+        <div class="info-row">
+          <span class="info-label">SSE stream</span>
+          OpenHamClock opens a persistent
+          <strong>Server-Sent Events</strong> connection to <code>http://&lt;host&gt;:5555/stream</code>.
+          Rig Bridge pushes real-time state updates down this stream whenever the frequency, mode,
+          or PTT state changes — typically every 500 ms. This is how the Rig Control panel
+          stays live without polling.
+        </div>
+        <div class="info-row">
+          <span class="info-label">REST commands</span>
+          When you click a frequency in OpenHamClock, the browser sends an HTTP
+          <code>POST</code> to <code>/freq</code> (frequency in Hz) or <code>/mode</code>.
+          These are authenticated with the <strong>API Token</strong> in the
+          <code>X-RigBridge-Token</code> header. Unauthenticated requests to write endpoints
+          are rejected.
+        </div>
+      </div>
+
+      <p>
+        The token is generated automatically by Rig Bridge on first run and shown prominently
+        in its setup UI. You copy it once into OpenHamClock's Settings — after that the
+        connection is fully automatic.
+      </p>
 
       <div class="callout callout-note">
         <span class="callout-icon">ℹ️</span>
         <div class="callout-body">
-          <div class="callout-title">Not sure which protocol your radio uses?</div>
-          <p>Check your radio's manual under "PC Control" or "CAT System". Yaesu radios use CAT
-          (often via a USB cable that enumerates as a COM/tty port). Icom radios use CI-V
-          (via USB or a dedicated CI-V interface). Kenwood uses a simple ASCII protocol.
-          Most modern radios present as a USB serial device — no extra interface needed.</p>
+          <div class="callout-title">OpenHamClock's browser, not its server, connects to Rig Bridge</div>
+          <p>Rig Bridge is called directly by the <em>browser tab</em> running OpenHamClock,
+          not by OpenHamClock's Node.js server. This means Rig Bridge must be reachable from
+          the machine where the browser is open — not necessarily from the Pi or server
+          that hosts OpenHamClock.</p>
         </div>
       </div>
 
-      <!-- ── Setup options ──────────────────────────────── -->
-      <h2>Setup: Choosing Your Connection Method</h2>
-      <p>There are two ways to connect your radio to OpenHamClock:</p>
+      <!-- ── Installation ───────────────────────────────── -->
+      <h2>Installing Rig Bridge</h2>
 
-      <div class="two-col">
-        <div>
-          <h3>Option A — rig-listener (recommended)</h3>
-          <p>
-            A small standalone executable that runs on <em>any</em> Windows, macOS, or Linux computer
-            connected to your radio. It handles the serial connection and exposes a simple HTTP API
-            that OpenHamClock calls over the network.
-          </p>
-          <p><strong>Best for:</strong> any setup. No Node.js required on the radio PC.
-          Works when OpenHamClock is on a different machine (Pi, cloud, etc.) than the radio.</p>
-        </div>
-        <div>
-          <h3>Option B — direct from server</h3>
-          <p>
-            OpenHamClock's Node.js server connects to the radio's serial port directly.
-            Simpler, but requires OpenHamClock to be running on the same machine as the radio.
-          </p>
-          <p><strong>Best for:</strong> single-machine setups where OpenHamClock and your radio
-          are both connected to the same computer.</p>
-        </div>
-      </div>
-
-      <!-- ── rig-listener setup ─────────────────────────── -->
-      <h2 id="rig-listener">Setting Up rig-listener (Option A)</h2>
-
+      <h3>Option A — Installer (recommended)</h3>
+      <p>
+        The easiest way. OpenHamClock provides a platform-specific installer script
+        that downloads Rig Bridge, installs dependencies, and starts it automatically.
+      </p>
       <ol class="step-list">
         <li>
           <div class="step-body">
-            <div class="step-title">Download rig-listener</div>
-            <p>Go to the <a href="https://github.com/accius/openhamclock/releases" target="_blank" rel="noopener">OpenHamClock releases page</a>
-            and download the latest <code>rig-listener</code> binary for your OS:
-            <code>rig-listener-win.exe</code>, <code>rig-listener-macos</code>, or <code>rig-listener-linux</code>.</p>
+            <div class="step-title">Open OpenHamClock Settings → Rig Bridge</div>
+            <p>Click the <strong>⚙️</strong> icon, navigate to the <strong>Rig Bridge</strong> tab,
+            and enable it. Download links for your OS will appear.</p>
           </div>
         </li>
         <li>
           <div class="step-body">
-            <div class="step-title">Connect your radio via USB and find the serial port</div>
-            <p>On <strong>Windows</strong>: open Device Manager → Ports (COM &amp; LPT). Note the COM number (e.g. <code>COM4</code>).<br>
-            On <strong>macOS</strong>: run <code>ls /dev/tty.usbserial*</code> or <code>ls /dev/cu.*</code>.<br>
-            On <strong>Linux</strong>: run <code>ls /dev/ttyUSB*</code> or <code>ls /dev/ttyACM*</code>.</p>
+            <div class="step-title">Run the installer</div>
+            <p>
+              <strong>Windows:</strong> double-click <code>install-rig-bridge.bat</code><br>
+              <strong>macOS / Linux:</strong>
+            </p>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">bash</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">$ </span>chmod +x ~/Downloads/install-rig-bridge.sh
+<span class="prompt">$ </span>~/Downloads/install-rig-bridge.sh</pre>
+            </div>
+            <p>The installer downloads the code, runs <code>npm install</code>, and starts Rig Bridge.</p>
           </div>
         </li>
         <li>
           <div class="step-body">
-            <div class="step-title">Run rig-listener with your radio's parameters</div>
-            <div class="code-block">
-              <div class="code-block-header">
-                <span class="code-block-lang">bash — Icom IC-7300 example</span>
-                <button class="copy-btn">Copy</button>
-              </div>
-              <pre><span class="prompt">$ </span>./rig-listener --port /dev/ttyUSB0 --baud 9600 --rig icom-ci-v --ci-v-address 0x94</pre>
-            </div>
-            <div class="code-block">
-              <div class="code-block-header">
-                <span class="code-block-lang">bash — Yaesu FT-991A example</span>
-                <button class="copy-btn">Copy</button>
-              </div>
-              <pre><span class="prompt">$ </span>./rig-listener --port COM4 --baud 38400 --rig yaesu-cat</pre>
-            </div>
-            <p>rig-listener starts an HTTP server on port <code>3005</code> by default.</p>
-          </div>
-        </li>
-        <li>
-          <div class="step-body">
-            <div class="step-title">Point OpenHamClock at rig-listener</div>
-            <p>In the OpenHamClock Settings panel, open <strong>Rig Control</strong> and set the URL to:</p>
-            <div class="code-block">
-              <div class="code-block-header">
-                <span class="code-block-lang">Settings → Rig Control → URL</span>
-                <button class="copy-btn">Copy</button>
-              </div>
-              <pre>http://localhost:3005      <span class="comment"># if rig-listener is on the same machine</span>
-http://192.168.1.50:3005   <span class="comment"># if rig-listener is on a different machine</span></pre>
-            </div>
-            <p>Click <strong>Test Connection</strong>. The Rig Control panel should show your radio's current frequency.</p>
+            <div class="step-title">Open the Rig Bridge setup UI</div>
+            <p>Navigate to <a href="http://localhost:5555" target="_blank">http://localhost:5555</a>.
+            You will see the Rig Bridge dashboard with your <strong>API Token</strong> displayed at the top.
+            Keep this tab open — you will need the token in the next section.</p>
           </div>
         </li>
       </ol>
 
-      <!-- ── Direct server setup ────────────────────────── -->
-      <h2 id="direct">Direct Server Setup (Option B)</h2>
-      <p>Add these variables to your <code>.env</code> and restart the server:</p>
+      <h3>Option B — From source</h3>
+      <p>If you prefer to run directly from the OpenHamClock repository:</p>
       <div class="code-block">
         <div class="code-block-header">
-          <span class="code-block-lang">.env</span>
+          <span class="code-block-lang">bash</span>
           <button class="copy-btn">Copy</button>
         </div>
-        <pre><span class="key">RIG_ENABLED</span>=<span class="value">true</span>
-<span class="key">RIG_TYPE</span>=<span class="value">icom-ci-v</span>           <span class="comment"># see table below for options</span>
-<span class="key">RIG_SERIAL_PORT</span>=<span class="value">/dev/ttyUSB0</span>  <span class="comment"># COM4 on Windows</span>
-<span class="key">RIG_BAUD_RATE</span>=<span class="value">9600</span>
-<span class="key">RIG_CI_V_ADDRESS</span>=<span class="value">0x94</span>         <span class="comment"># Icom only — check your radio's manual</span></pre>
+        <pre><span class="prompt">$ </span>cd openhamclock/rig-bridge
+<span class="prompt">$ </span>npm install
+<span class="prompt">$ </span>node rig-bridge.js</pre>
       </div>
 
-      <h3>RIG_TYPE values</h3>
+      <h3>Option C — Standalone executable</h3>
+      <p>Pre-built binaries require no Node.js installation. Download the correct file for your platform from the <a href="https://github.com/accius/openhamclock/releases" target="_blank" rel="noopener">releases page</a>:</p>
+      <div class="info-box">
+        <div class="info-row"><span class="info-label">Windows</span><code>ohc-rig-bridge-win.exe</code></div>
+        <div class="info-row"><span class="info-label">macOS (Intel)</span><code>ohc-rig-bridge-macos</code></div>
+        <div class="info-row"><span class="info-label">macOS (Apple Silicon)</span><code>ohc-rig-bridge-macos-arm</code></div>
+        <div class="info-row"><span class="info-label">Linux x64</span><code>ohc-rig-bridge-linux</code></div>
+        <div class="info-row"><span class="info-label">Raspberry Pi (arm64)</span><code>ohc-rig-bridge-linux-arm64</code></div>
+      </div>
+
+      <!-- ── Supported radios ───────────────────────────── -->
+      <h2>Supported Radios</h2>
+      <p>
+        Rig Bridge uses a plugin architecture — each radio type or connection method is a
+        separate module. Select the plugin that matches your radio in the setup UI.
+      </p>
+
+      <h3>USB direct connection</h3>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>RIG_TYPE value</th><th>Protocol</th><th>Common radios</th></tr></thead>
+          <thead><tr><th>Plugin</th><th>Protocol</th><th>Radios (examples)</th></tr></thead>
           <tbody>
-            <tr><td><code>yaesu-cat</code></td><td>Yaesu CAT</td><td>FT-991A, FT-710, FT-DX10, FT-817/818</td></tr>
-            <tr><td><code>icom-ci-v</code></td><td>Icom CI-V</td><td>IC-7300, IC-7610, IC-705, IC-9700</td></tr>
-            <tr><td><code>kenwood</code></td><td>Kenwood ASCII</td><td>TS-890S, TS-590SG, TS-2000</td></tr>
-            <tr><td><code>elecraft</code></td><td>Elecraft KIO3</td><td>K4, K3, K3S, KX3, KX2</td></tr>
-            <tr><td><code>tci</code></td><td>TCI WebSocket</td><td>Expert SDR, Afedri SDR</td></tr>
-            <tr><td><code>hamlib</code></td><td>Hamlib rigctld</td><td>Any Hamlib-supported radio</td></tr>
+            <tr>
+              <td><strong>Yaesu</strong></td>
+              <td>CAT over USB serial</td>
+              <td>FT-991A, FT-891, FT-710, FT-DX10, FT-DX101, FT-DX3000, FT-5000</td>
+            </tr>
+            <tr>
+              <td><strong>Kenwood / Elecraft</strong></td>
+              <td>Kenwood ASCII over USB serial</td>
+              <td>TS-890S, TS-590SG, TS-2000, TS-480, K4, K3, K3S, KX3, KX2</td>
+            </tr>
+            <tr>
+              <td><strong>Icom</strong></td>
+              <td>CI-V over USB serial</td>
+              <td>IC-7300, IC-7610, IC-9700, IC-705, IC-7851</td>
+            </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- ── Rotator control ────────────────────────────── -->
-      <h2>Rotator Control</h2>
-      <p>
-        OpenHamClock also supports <strong>antenna rotator control</strong>. When a DX spot or
-        activator is selected, the bearing to that station is computed from your grid square and
-        displayed in the Rotator panel. If a rotator controller is connected, clicking
-        <strong>Rotate</strong> sends the azimuth command automatically.
-      </p>
-      <p>
-        A bearing line from your QTH to the DX station is drawn on the world map,
-        giving you a visual confirmation that your beam is pointed in the right direction.
-      </p>
-
-      <div class="callout callout-tip">
-        <span class="callout-icon">💡</span>
-        <div class="callout-body">
-          <div class="callout-title">No rotator? Still useful.</div>
-          <p>Even without a connected rotator, the bearing readout and map line are valuable.
-          If you have a fixed yagi or manually-rotated beam, the azimuth shown in OpenHamClock
-          tells you exactly where to turn it before you call. No separate bearing calculator needed.</p>
-        </div>
+      <h3>Network connection</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Plugin</th><th>Protocol</th><th>Radios / software</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>TCI / SDR</strong></td>
+              <td>TCI WebSocket (TCP)</td>
+              <td>Thetis, ExpertSDR2 (Expert Electronics), Afedri SDR — default port 40001</td>
+            </tr>
+            <tr>
+              <td><strong>SmartSDR</strong></td>
+              <td>FlexRadio REST API (TCP)</td>
+              <td>FLEX-6300, FLEX-6400, FLEX-6500, FLEX-6600, FLEX-6700 — default port 4992</td>
+            </tr>
+            <tr>
+              <td><strong>rigctld (Hamlib)</strong></td>
+              <td>Hamlib TCP</td>
+              <td>Any radio supported by Hamlib, via the <code>rigctld</code> daemon — default port 4532</td>
+            </tr>
+            <tr>
+              <td><strong>flrig</strong></td>
+              <td>XML-RPC</td>
+              <td>Any radio controlled by the flrig front-end — default port 12345</td>
+            </tr>
+            <tr>
+              <td><strong>RTL-SDR</strong></td>
+              <td>rtl_tcp protocol</td>
+              <td>RTL-SDR dongles via rtl_tcp — receive only, default port 1234</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      <!-- ── The Rig Control panel ──────────────────────── -->
-      <h2>The Rig Control Panel</h2>
+      <!-- ── Configuring the radio ──────────────────────── -->
+      <h2>Configuring Your Radio</h2>
       <p>
-        Once connected, the Rig Control panel shows a live readout of your radio's state:
+        All radio configuration is done in the <strong>Rig Bridge setup UI</strong>
+        at <code>http://localhost:5555</code>. The configuration is saved to a JSON file on your machine:
       </p>
       <div class="info-box">
-        <div class="info-row"><span class="info-label">Frequency</span> Current VFO frequency, large and readable from across the shack.</div>
-        <div class="info-row"><span class="info-label">Mode</span> Current operating mode: CW, USB, LSB, FT8, RTTY, AM, FM.</div>
-        <div class="info-row"><span class="info-label">VFO</span> VFO A or VFO B indicator.</div>
-        <div class="info-row"><span class="info-label">PTT state</span> Transmitting / receiving indicator. Updates in real time.</div>
-        <div class="info-row"><span class="info-label">Band</span> Derived from frequency — shown as band name (e.g. "20 m").</div>
+        <div class="info-row"><span class="info-label">macOS / Linux</span><code>~/.config/openhamclock/rig-bridge-config.json</code></div>
+        <div class="info-row"><span class="info-label">Windows</span><code>%APPDATA%\openhamclock\rig-bridge-config.json</code></div>
       </div>
+
+      <h3>Yaesu (USB CAT)</h3>
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Set CAT baud rate on the radio</div>
+            <p>On your Yaesu, go to <strong>Menu → Operation Setting → CAT Rate</strong> and set it to <strong>38400</strong>.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Configure in the setup UI</div>
+            <p>Radio Type → <strong>Yaesu</strong>, select your serial port, baud rate <strong>38400</strong>,
+            Stop Bits <strong>2</strong>, enable <strong>Hardware Flow (RTS/CTS)</strong> for FT-991A and FT-710.
+            Click <strong>Save &amp; Connect</strong>.</p>
+          </div>
+        </li>
+      </ol>
+
+      <h3>Icom (CI-V)</h3>
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Note your radio's CI-V address</div>
+            <p>Check your radio's menu under <em>Connectors</em> or <em>CI-V</em>. Common addresses:</p>
+            <div class="info-box">
+              <div class="info-row"><span class="info-label">IC-7300</span><code>0x94</code></div>
+              <div class="info-row"><span class="info-label">IC-7610</span><code>0x98</code></div>
+              <div class="info-row"><span class="info-label">IC-9700</span><code>0xA2</code></div>
+              <div class="info-row"><span class="info-label">IC-705</span><code>0xA4</code></div>
+              <div class="info-row"><span class="info-label">IC-7851</span><code>0x8E</code></div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Configure in the setup UI</div>
+            <p>Radio Type → <strong>Icom</strong>, select your serial port, enter the CI-V address, baud rate <strong>115200</strong>.
+            Click <strong>Save &amp; Connect</strong>.</p>
+          </div>
+        </li>
+      </ol>
+
+      <h3>TCI / SDR (Thetis, ExpertSDR)</h3>
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Enable TCI in your SDR software</div>
+            <p>In Thetis: <strong>Setup → CAT Control → Enable TCI Server</strong> (port 40001).</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Configure in the setup UI</div>
+            <p>Radio Type → <strong>TCI / SDR</strong>, Host <code>localhost</code>, Port <strong>40001</strong>.
+            Click <strong>Save &amp; Connect</strong>.</p>
+          </div>
+        </li>
+      </ol>
 
       <div class="callout callout-warn">
         <span class="callout-icon">⚠️</span>
         <div class="callout-body">
           <div class="callout-title">Serial port permissions on Linux</div>
-          <p>On Linux, your user account may not have permission to open <code>/dev/ttyUSB0</code> by default.
+          <p>Your user account needs access to <code>/dev/ttyUSB0</code> (or equivalent).
           Add yourself to the <code>dialout</code> group and log out/in:</p>
           <p><code>sudo usermod -aG dialout $USER</code></p>
-          <p>On Raspberry Pi OS this is not needed — the default <code>pi</code> user already has dialout access.</p>
+        </div>
+      </div>
+
+      <!-- ── Connecting OHC to rig-bridge ──────────────── -->
+      <h2>Connecting OpenHamClock to Rig Bridge</h2>
+      <p>
+        Once Rig Bridge is running and your radio is connected, tell OpenHamClock where
+        to find it and give it the API token.
+      </p>
+
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Copy your API Token from Rig Bridge</div>
+            <p>Open <code>http://localhost:5555</code>. The token is shown at the top of the page.
+            Click to copy it.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Open OpenHamClock Settings → Rig Bridge</div>
+            <p>Click the <strong>⚙️</strong> icon in OpenHamClock and go to the <strong>Rig Bridge</strong> tab.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Enter the connection details</div>
+            <div class="info-box">
+              <div class="info-row"><span class="info-label">Enable Rig Bridge</span>Toggle on</div>
+              <div class="info-row"><span class="info-label">Host</span><code>http://localhost</code> (same machine) or <code>http://192.168.1.50</code> (LAN)</div>
+              <div class="info-row"><span class="info-label">Port</span><code>5555</code></div>
+              <div class="info-row"><span class="info-label">API Token</span>Paste the token copied from Rig Bridge</div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Click Save</div>
+            <p>OpenHamClock immediately opens the SSE stream to <code>/stream</code>.
+            The Rig Control panel will show your radio's current frequency within a second
+            if the connection is successful.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="figure">
+        <div class="figure-placeholder">
+          <span class="placeholder-icon">⚙️</span>
+          <span class="placeholder-label">Screenshot: OpenHamClock Settings → Rig Bridge panel</span>
+          <span style="font-size:0.75rem;opacity:0.5;">assets/img/screenshots/rig-bridge-settings.png</span>
+        </div>
+        <div class="figure-caption">
+          The Rig Bridge settings panel in OpenHamClock. Enter the host, port, and API token from Rig Bridge.
+          The status indicator turns green once the SSE stream is established.
+        </div>
+      </div>
+
+      <!-- ── LAN access ─────────────────────────────────── -->
+      <h2>Rig Bridge on a Different Machine</h2>
+      <p>
+        If your radio is connected to one computer (e.g. a shack PC) and you open OpenHamClock
+        on another (e.g. a tablet or a Raspberry Pi running the server), Rig Bridge needs to
+        listen on the network, not just localhost.
+      </p>
+      <p>Start Rig Bridge with the <code>--bind</code> flag, or change <code>bindAddress</code> in the setup UI:</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="prompt">$ </span>node rig-bridge.js --bind 0.0.0.0</pre>
+      </div>
+      <p>
+        Then in OpenHamClock Settings → Rig Bridge, set <strong>Host</strong> to the shack PC's
+        LAN IP address (e.g. <code>http://192.168.1.50</code>) instead of localhost.
+      </p>
+
+      <!-- ── Cloud relay ────────────────────────────────── -->
+      <h2>Cloud Relay</h2>
+      <p>
+        When OpenHamClock is hosted in the cloud (openhamclock.com or your own Railway instance),
+        the browser tab is served from a remote server — it cannot reach <code>localhost:5555</code>
+        on your home network directly.
+      </p>
+      <p>
+        The <strong>Cloud Relay</strong> plugin inside Rig Bridge solves this. Rig Bridge opens
+        a persistent outbound HTTPS connection to your cloud OpenHamClock instance and maintains
+        it as a long-poll channel. Commands from the browser travel:
+      </p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">flow</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre>Browser click → Cloud OHC server → HTTPS long-poll → Rig Bridge → Radio (USB)</pre>
+      </div>
+      <p>To enable Cloud Relay:</p>
+      <ol>
+        <li>In the Rig Bridge setup UI, go to <strong>Security</strong> and enable <strong>HTTPS</strong>. Restart Rig Bridge and install the self-signed certificate when prompted.</li>
+        <li>In <strong>Plugins → Cloud Relay</strong>, enter your cloud OpenHamClock URL and the relay API key from OpenHamClock's Settings → Rig Bridge page.</li>
+        <li>In OpenHamClock Settings → Rig Bridge, set the host to <code>https://localhost</code> (note the <code>s</code>) and click <strong>Connect Cloud Relay</strong>.</li>
+      </ol>
+
+      <!-- ── Rig control panel ──────────────────────────── -->
+      <h2>The Rig Control Panel</h2>
+      <p>
+        Once connected, the Rig Control panel in OpenHamClock shows a live readout of your radio's state,
+        updated from the SSE stream:
+      </p>
+      <div class="info-box">
+        <div class="info-row"><span class="info-label">Frequency</span>Current VFO frequency in large, readable digits.</div>
+        <div class="info-row"><span class="info-label">Mode</span>CW, USB, LSB, FT8, RTTY, AM, FM — derived from the radio.</div>
+        <div class="info-row"><span class="info-label">VFO</span>VFO A or VFO B.</div>
+        <div class="info-row"><span class="info-label">PTT</span>Transmitting / receiving indicator — updates in real time if PTT is enabled in Rig Bridge.</div>
+      </div>
+
+      <!-- ── Additional plugins ─────────────────────────── -->
+      <h2>Additional Plugins</h2>
+      <p>
+        Rig Bridge does more than just radio control. The following plugins are enabled
+        from the <strong>Plugins</strong> tab in the setup UI:
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Plugin</th><th>What it does</th><th>Default port</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>WSJT-X Relay</strong></td>
+              <td>Receives FT8/FT4/JT65 UDP packets from WSJT-X and forwards decoded spots to OpenHamClock</td>
+              <td>UDP 2237</td>
+            </tr>
+            <tr>
+              <td><strong>JTDX</strong></td>
+              <td>Same as WSJT-X Relay but for JTDX</td>
+              <td>UDP 2238</td>
+            </tr>
+            <tr>
+              <td><strong>MSHV</strong></td>
+              <td>MSK144, Q65, and other MSHV modes</td>
+              <td>UDP 2239</td>
+            </tr>
+            <tr>
+              <td><strong>JS8Call</strong></td>
+              <td>JS8 keyboard messaging</td>
+              <td>UDP 2242</td>
+            </tr>
+            <tr>
+              <td><strong>APRS TNC</strong></td>
+              <td>Receives APRS packets from a local Direwolf TNC (KISS TCP or serial) and pushes them to OpenHamClock</td>
+              <td>TCP 8001</td>
+            </tr>
+            <tr>
+              <td><strong>Rotator</strong></td>
+              <td>Controls an antenna rotator via Hamlib's <code>rotctld</code> daemon</td>
+              <td>TCP 4533</td>
+            </tr>
+            <tr>
+              <td><strong>Cloud Relay</strong></td>
+              <td>Bridges local rig control to a cloud-hosted OpenHamClock instance</td>
+              <td>HTTPS outbound</td>
+            </tr>
+            <tr>
+              <td><strong>Winlink</strong></td>
+              <td>Winlink RMS gateway discovery and Pat client integration</td>
+              <td>HTTP</td>
+            </tr>
+            <tr>
+              <td><strong>MeshCom</strong></td>
+              <td>LoRa mesh network messages via MeshCom UDP broadcast</td>
+              <td>UDP 1799</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">WSJT-X and Rig Bridge on the same machine</div>
+          <p>If WSJT-X and Rig Bridge run on the same PC, enable the <strong>WSJT-X Relay</strong> plugin
+          in Rig Bridge. In WSJT-X: <strong>File → Settings → Reporting</strong>, tick
+          <strong>UDP Server</strong>, set hostname <code>127.0.0.1</code>, port <code>2237</code>.
+          Rig Bridge passes the decoded spots through to OpenHamClock automatically —
+          no separate configuration in OpenHamClock's <code>.env</code> is needed.</p>
         </div>
       </div>
 
