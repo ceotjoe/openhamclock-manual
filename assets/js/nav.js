@@ -30,6 +30,25 @@
       <a href="troubleshooting.html"><span class="nav-icon">🔧</span> Troubleshooting</a>
       <a href="reference.html"><span class="nav-icon">📖</span> Reference</a>
     </nav>
+
+    <div class="translate-widget">
+      <div class="translate-label">🌐 Translate page</div>
+      <select class="translate-select" id="ohc-lang-select" aria-label="Select language for translation">
+        <option value="">English (original)</option>
+        <option value="de">Deutsch</option>
+        <option value="fr">Français</option>
+        <option value="es">Español</option>
+        <option value="it">Italiano</option>
+        <option value="pt">Português</option>
+        <option value="nl">Nederlands</option>
+        <option value="pl">Polski</option>
+        <option value="sv">Svenska</option>
+        <option value="ja">日本語</option>
+        <option value="zh-CN">中文（简体）</option>
+        <option value="ar">العربية</option>
+        <option value="ru">Русский</option>
+      </select>
+    </div>
   `;
 
   const MOBILE_HEADER_HTML = `
@@ -48,6 +67,7 @@
     setActiveLink();
     setupMobileMenu();
     setupCopyButtons();
+    setupTranslate();
   }
 
   function setActiveLink() {
@@ -99,6 +119,77 @@
         });
       });
     });
+  }
+
+  // ── Google Translate ──────────────────────────────────────
+
+  function setupTranslate() {
+    // Hidden target div required by the Google Translate Element script
+    const gtEl = document.createElement('div');
+    gtEl.id = 'google_translate_element';
+    document.body.appendChild(gtEl);
+
+    const select = document.getElementById('ohc-lang-select');
+    if (!select) return;
+
+    // Restore saved language choice on every page load
+    const saved = localStorage.getItem('ohc-lang');
+    if (saved) {
+      select.value = saved;
+      triggerTranslate(saved);
+    }
+
+    select.addEventListener('change', function () {
+      const lang = this.value;
+      if (!lang) {
+        localStorage.removeItem('ohc-lang');
+        resetTranslation();
+      } else {
+        localStorage.setItem('ohc-lang', lang);
+        triggerTranslate(lang);
+      }
+    });
+  }
+
+  function triggerTranslate(lang) {
+    // (Re-)define the callback before injecting / re-using the script
+    window.googleTranslateElementInit = function () {
+      new google.translate.TranslateElement(
+        { pageLanguage: 'en', autoDisplay: false },
+        'google_translate_element'
+      );
+      waitForCombo(lang, 0);
+    };
+
+    if (!document.getElementById('gt-script')) {
+      // First call on this page — lazy-load the GT script
+      var s = document.createElement('script');
+      s.id  = 'gt-script';
+      s.src = '//translate.googleapis.com/translate_a/element.js?cb=googleTranslateElementInit';
+      document.head.appendChild(s);
+    } else {
+      // Script already loaded and widget already initialised — just switch language
+      waitForCombo(lang, 0);
+    }
+  }
+
+  // Polls until the hidden <select class="goog-te-combo"> appears, then sets the language
+  function waitForCombo(lang, attempts) {
+    var combo = document.querySelector('.goog-te-combo');
+    if (combo) {
+      combo.value = lang;
+      combo.dispatchEvent(new Event('change'));
+    } else if (attempts < 30) {
+      setTimeout(function () { waitForCombo(lang, attempts + 1); }, 200);
+    }
+  }
+
+  function resetTranslation() {
+    var combo = document.querySelector('.goog-te-combo');
+    if (combo) {
+      combo.value = 'en';
+      combo.dispatchEvent(new Event('change'));
+    }
   }
 
   if (document.readyState === 'loading') {
