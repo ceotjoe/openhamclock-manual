@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Start — OpenHamClock Manual</title>
+  <meta name="description" content="Get OpenHamClock running in under 5 minutes — browser, Docker, or local install.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="mobile-header"></div>
+  <div id="sidebar"></div>
+
+  <main id="main">
+    <div class="content-wrap">
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">Quick Start</span>
+      </div>
+
+      <header class="page-header">
+        <div class="page-header-top">
+          <div>
+            <span class="page-number">Section 02</span>
+            <h1 class="page-title"><span class="title-icon">⚡</span> Quick Start</h1>
+          </div>
+          <span class="badge badge-install">Install</span>
+        </div>
+        <p class="page-tagline">Three paths to a running dashboard — pick the one that fits your setup. No prerequisites needed for Option A.</p>
+      </header>
+
+      <!-- ── Three options overview ────────────────────── -->
+      <h2>Choose Your Path</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Option</th>
+              <th>What you need</th>
+              <th>Time</th>
+              <th>Best for</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>A — Browser</strong></td>
+              <td>Just a web browser</td>
+              <td>30 seconds</td>
+              <td>Trying it out, no install</td>
+            </tr>
+            <tr>
+              <td><strong>B — Docker</strong></td>
+              <td>Docker Desktop installed</td>
+              <td>2 minutes</td>
+              <td>Any PC/Mac/Linux, persistent install</td>
+            </tr>
+            <tr>
+              <td><strong>C — Node.js</strong></td>
+              <td>Node.js 20+ and Git</td>
+              <td>3 minutes</td>
+              <td>Developers, Raspberry Pi, full control</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── Option A ───────────────────────────────────── -->
+      <h2>Option A — Try it in the Browser</h2>
+      <p>
+        The fastest way to see OpenHamClock is the hosted version at
+        <a href="https://openhamclock.com" target="_blank" rel="noopener">openhamclock.com</a>.
+        It runs the same codebase as a self-hosted install, with all 30+ panels active.
+      </p>
+
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Open <a href="https://openhamclock.com" target="_blank" rel="noopener">openhamclock.com</a> in your browser</div>
+            <p>The dashboard loads immediately. You will see a setup prompt asking for your callsign.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Enter your callsign</div>
+            <p>Type your amateur radio callsign (e.g. <code>K0CJH</code>). If you do not have a licence yet,
+            use a well-known callsign like <code>W1AW</code> to explore.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Enter your grid square</div>
+            <p>A Maidenhead grid locator is a 4- or 6-character code (e.g. <code>FN31</code> for New England).
+            Not sure of yours? Find it at <a href="https://www.levinecentral.com/ham/grid_square.php" target="_blank" rel="noopener">levinecentral.com/ham/grid_square.php</a>
+            — just click your location on the map.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Explore the dashboard</div>
+            <p>DX spots, space weather, and the world map are live immediately. Your settings are saved in your browser
+            for next time.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-body">
+          <div class="callout-title">WSJT-X and rig control require a self-hosted install</div>
+          <p>The hosted site cannot reach your local network. WSJT-X/FT8 integration and rig control
+          (Rig Bridge) only work when OpenHamClock is running on your own machine or LAN.
+          All other panels work fully on the hosted version.</p>
+        </div>
+      </div>
+
+      <!-- ── Option B ───────────────────────────────────── -->
+      <h2>Option B — Docker One-Liner</h2>
+      <p>
+        If you have <a href="https://docs.docker.com/get-docker/" target="_blank" rel="noopener">Docker</a>
+        installed, this is the recommended way to run a permanent local install.
+        No Node.js, no Git, no manual dependency management.
+      </p>
+
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Download the Docker Compose file</div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">bash</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">$ </span>curl -fsSL https://raw.githubusercontent.com/accius/openhamclock/main/docker-compose.yml -o docker-compose.yml</pre>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Create your <code>.env</code> configuration file</div>
+            <p>Create a file called <code>.env</code> in the same folder. At minimum, set your callsign and grid:</p>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">.env</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="key">CALLSIGN</span>=<span class="value">K0CJH</span>
+<span class="key">LOCATOR</span>=<span class="value">DM79</span></pre>
+            </div>
+            <p>Replace <code>K0CJH</code> and <code>DM79</code> with your own callsign and grid square.
+            See <a href="configuration.html">Configuration</a> for the full list of options.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Start the container</div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">bash</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">$ </span>docker compose up -d</pre>
+            </div>
+            <p>The first run downloads the image (about 250 MB) and starts the server.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Open your browser</div>
+            <p>Navigate to <a href="http://localhost:3000" target="_blank">http://localhost:3000</a>.
+            Your dashboard is live.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">Accessing from other devices on your network</div>
+          <p>Add <code>HOST=0.0.0.0</code> to your <code>.env</code> file and restart the container.
+          Then open <code>http://&lt;your-pc-ip&gt;:3000</code> from any device on your LAN —
+          a tablet on the operating table, for example.</p>
+        </div>
+      </div>
+
+      <!-- ── Option C ───────────────────────────────────── -->
+      <h2>Option C — Local Node.js Install</h2>
+      <p>
+        The bare-metal approach. This is what you want for a Raspberry Pi, for development,
+        or if you prefer not to use Docker.
+        Requires <strong>Node.js 20 or later</strong> (v22 LTS recommended) and <strong>Git</strong>.
+      </p>
+
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Clone the repository</div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">bash</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">$ </span>git clone https://github.com/accius/openhamclock.git
+<span class="prompt">$ </span>cd openhamclock</pre>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Install dependencies</div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">bash</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">$ </span>npm ci</pre>
+            </div>
+            <p>This installs exactly the versions in the lockfile. Takes 1–2 minutes on first run.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Set your callsign and grid</div>
+            <p>On first run, the server automatically copies <code>.env.example</code> to <code>.env</code>.
+            Open <code>.env</code> in any text editor and set at minimum:</p>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">.env</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="key">CALLSIGN</span>=<span class="value">K0CJH</span>
+<span class="key">LOCATOR</span>=<span class="value">DM79</span></pre>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Start the server</div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">bash</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">$ </span>npm start
+<span class="output">
+  OpenHamClock v26.3.2
+  Backend  → http://localhost:3001
+  Frontend → http://localhost:3000
+  Ready.
+</span></pre>
+            </div>
+            <p>Open <a href="http://localhost:3000" target="_blank">http://localhost:3000</a> in your browser.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-body">
+          <div class="callout-title">Two ports in development mode</div>
+          <p>When started with <code>npm start</code>, the frontend dev server runs on port <strong>3000</strong>
+          and the backend API on port <strong>3001</strong>. The dev server automatically proxies
+          <code>/api</code> requests to the backend — you only ever open port 3000 in your browser.</p>
+        </div>
+      </div>
+
+      <!-- ── First launch ───────────────────────────────── -->
+      <h2>First Launch — Setting Up Your Station</h2>
+      <p>
+        When you open OpenHamClock for the first time you will see the <strong>Settings panel</strong>
+        asking for your station information. This takes about 30 seconds to complete.
+      </p>
+
+      <div class="figure">
+        <div class="figure-placeholder">
+          <span class="placeholder-icon">⚙️</span>
+          <span class="placeholder-label">Screenshot: First-launch Settings panel</span>
+          <span style="font-size:0.75rem;opacity:0.5;">assets/img/screenshots/first-launch-settings.png</span>
+        </div>
+        <div class="figure-caption">
+          The Settings panel on first launch. Enter your callsign, grid square, and preferred units.
+          All fields can be changed later from the ⚙️ icon in the top toolbar.
+        </div>
+      </div>
+
+      <h3>Required fields</h3>
+      <div class="info-box">
+        <div class="info-row">
+          <span class="info-label">Callsign</span>
+          Your amateur radio callsign (e.g. <code>K0CJH</code>, <code>G4ABC</code>, <code>JA1ZZZ</code>).
+          Used for sunrise/sunset times, DXCC entity lookup, and map centering.
+        </div>
+        <div class="info-row">
+          <span class="info-label">Grid Square</span>
+          Your Maidenhead locator, 4 or 6 characters (e.g. <code>IO91</code> or <code>IO91wm</code>).
+          Determines your map position and great-circle path calculations.
+          OpenHamClock can also calculate your coordinates automatically from a 6-character grid.
+        </div>
+      </div>
+
+      <h3>Optional but recommended</h3>
+      <div class="info-box">
+        <div class="info-row">
+          <span class="info-label">Units</span>
+          Imperial (miles, °F) or metric (km, °C). Affects distances, temperatures, and wind speed.
+        </div>
+        <div class="info-row">
+          <span class="info-label">Time format</span>
+          12-hour or 24-hour clock display throughout the dashboard.
+        </div>
+        <div class="info-row">
+          <span class="info-label">Theme</span>
+          Dark (default), Light, Legacy (green-on-black), Retro, or Custom.
+        </div>
+      </div>
+
+      <!-- ── What's next ────────────────────────────────── -->
+      <h2>What's Next?</h2>
+      <p>
+        You are up and running. Here are the most useful next steps:
+      </p>
+      <ul>
+        <li><strong>Raspberry Pi dedicated display</strong> — see <a href="installation.html#raspberry-pi">Installation → Raspberry Pi</a> for kiosk mode with auto-start on boot.</li>
+        <li><strong>Network access from other devices</strong> — see <a href="configuration.html#network">Configuration → Port &amp; Network Settings</a>.</li>
+        <li><strong>Connect WSJT-X</strong> — see <a href="wsjt-ft8.html">WSJT-X / FT8</a>.</li>
+        <li><strong>Connect your rig</strong> — see <a href="rig-bridge.html">Rig Bridge</a>.</li>
+        <li><strong>Full platform-by-platform install guide</strong> — see <a href="installation.html">Installation</a>.</li>
+      </ul>
+
+      <nav class="page-nav">
+        <a href="index.html" class="page-nav-link">
+          <span class="nav-arrow">←</span>
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Previous</span>
+            <span class="page-nav-title">Introduction</span>
+          </div>
+        </a>
+        <a href="installation.html" class="page-nav-link next">
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Next</span>
+            <span class="page-nav-title">Installation</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POTA / SOTA / WWFF — OpenHamClock Manual</title>
+  <meta name="description" content="Tracking live POTA, SOTA, WWFF and WWBOTA activations in OpenHamClock — find activators on the map and tune your rig instantly.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="mobile-header"></div>
+  <div id="sidebar"></div>
+
+  <main id="main">
+    <div class="content-wrap">
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">POTA / SOTA / WWFF</span>
+      </div>
+
+      <header class="page-header">
+        <div class="page-header-top">
+          <div>
+            <span class="page-number">Section 09</span>
+            <h1 class="page-title"><span class="title-icon">🏔️</span> POTA / SOTA / WWFF / WWBOTA</h1>
+          </div>
+          <span class="badge badge-feature">Feature</span>
+        </div>
+        <p class="page-tagline">See every active park, summit, nature reserve, and bunker activator in the world — live on the map and in the panel — updated every 60 seconds.</p>
+      </header>
+
+      <!-- ── What are these programmes? ────────────────── -->
+      <h2>The Activation Programmes</h2>
+      <p>
+        These four programmes share a common idea: an amateur radio operator travels to a
+        designated location — a national park, a mountain summit, a nature reserve, or a
+        historical military bunker — sets up a portable or mobile station, and makes contacts
+        with other operators. The "hunter" side (that is where you come in, watching OpenHamClock)
+        tries to contact as many activators as possible to earn awards and points.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Programme</th><th>Locations</th><th>Scale</th><th>Website</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>POTA</strong><br><small>Parks on the Air</small></td>
+              <td>National parks, forests, wildlife refuges, monuments</td>
+              <td>80,000+ parks in 100+ countries</td>
+              <td><a href="https://pota.app" target="_blank" rel="noopener">pota.app</a></td>
+            </tr>
+            <tr>
+              <td><strong>SOTA</strong><br><small>Summits on the Air</small></td>
+              <td>Mountain summits above a qualifying altitude</td>
+              <td>160,000+ summits in 100+ associations</td>
+              <td><a href="https://www.sota.org.uk" target="_blank" rel="noopener">sota.org.uk</a></td>
+            </tr>
+            <tr>
+              <td><strong>WWFF</strong><br><small>World Wide Flora &amp; Fauna</small></td>
+              <td>Nature reserves, protected areas, flora &amp; fauna parks</td>
+              <td>100,000+ references worldwide</td>
+              <td><a href="https://wwff.co" target="_blank" rel="noopener">wwff.co</a></td>
+            </tr>
+            <tr>
+              <td><strong>WWBOTA</strong><br><small>World Wide Bunkers on the Air</small></td>
+              <td>Historical military bunkers, fortifications, shelters</td>
+              <td>Growing programme across Europe and beyond</td>
+              <td><a href="https://wwbota.org" target="_blank" rel="noopener">wwbota.org</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-body">
+          <div class="callout-title">You do not need to be an activator to use these panels</div>
+          <p>The vast majority of operators using these panels are <em>hunters</em> — they stay
+          home at their fixed station and call the portable activators. You need only a normal
+          amateur licence and a radio. OpenHamClock shows you who is active, where they are,
+          and what frequency they are on.</p>
+        </div>
+      </div>
+
+      <!-- ── The panels ─────────────────────────────────── -->
+      <h2>The Activation Panels</h2>
+      <p>
+        OpenHamClock has individual panels for each programme (POTA, SOTA, WWFF, WWBOTA),
+        all following the same layout. Each panel shows a live list of <strong>active activators</strong>
+        — operators who are on the air right now at a qualifying location. The list is sorted by
+        most recently spotted, with the freshest activity at the top.
+      </p>
+
+      <div class="figure">
+        <div class="figure-placeholder">
+          <span class="placeholder-icon">🏔️</span>
+          <span class="placeholder-label">Screenshot: POTA panel with activator list and map markers</span>
+          <span style="font-size:0.75rem;opacity:0.5;">assets/img/screenshots/pota-panel.png</span>
+        </div>
+        <div class="figure-caption">
+          The POTA panel listing active park activators. Each row shows callsign, park reference,
+          park name, frequency, and band. Green flags on the map correspond to each listed activator.
+          Click any row to zoom the map to that park and highlight the marker.
+        </div>
+      </div>
+
+      <h3>Reading an activator row</h3>
+      <div class="info-box">
+        <div class="info-row"><span class="info-label">Callsign</span> The activator's callsign. Click to draw the great-circle path from your QTH on the map.</div>
+        <div class="info-row"><span class="info-label">Reference</span> The park/summit/reserve identifier (e.g. <code>US-0001</code> for Acadia NP, <code>W4C/CM-001</code> for a SOTA summit). Links to the programme's website for that location.</div>
+        <div class="info-row"><span class="info-label">Name</span> The human-readable name of the location.</div>
+        <div class="info-row"><span class="info-label">Frequency</span> The last spotted frequency in kHz. Click to tune your rig if Rig Bridge is configured.</div>
+        <div class="info-row"><span class="info-label">Band / Mode</span> Current band and mode (SSB, CW, FT8, etc.).</div>
+        <div class="info-row"><span class="info-label">Age</span> How long since the last spot for this activator. Spots older than 30 minutes are automatically removed.</div>
+      </div>
+
+      <!-- ── Map markers ────────────────────────────────── -->
+      <h2>Map Markers</h2>
+      <p>
+        Every active activator gets a marker on the world map, positioned at the coordinates of
+        their park, summit, or reserve. Marker icons are distinct per programme so you can
+        tell them apart at a glance:
+      </p>
+
+      <div class="info-box">
+        <div class="info-row"><span class="info-label">🟢 Green flag</span> POTA — Parks on the Air activator</div>
+        <div class="info-row"><span class="info-label">🔴 Red triangle</span> SOTA — summit activator</div>
+        <div class="info-row"><span class="info-label">🟣 Purple leaf</span> WWFF — flora &amp; fauna nature reserve</div>
+        <div class="info-row"><span class="info-label">🔵 Blue shield</span> WWBOTA — bunker / fortification</div>
+      </div>
+
+      <p>
+        Click any marker on the map to open a popup showing the activator's callsign, reference,
+        name, frequency, and a <strong>Tune</strong> button (if Rig Bridge is connected).
+      </p>
+
+      <!-- ── Working an activator ───────────────────────── -->
+      <h2>Working an Activator — Step by Step</h2>
+
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Spot an activator in the panel or on the map</div>
+            <p>The panel refreshes every 60 seconds. New spots appear at the top with a brief
+            highlight animation. Green flags on the map tell you which parks are currently active
+            at a glance.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Click the activator row or map marker</div>
+            <p>This opens the details popup and draws the great-circle path from your QTH to
+            the park on the world map. The DX Location panel updates with the bearing,
+            distance, and the activator's sunrise/sunset times (useful if they are in a
+            very different time zone).</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Click the frequency or Tune button</div>
+            <p>If Rig Bridge is connected, your radio tunes to the exact spotted frequency
+            in the correct mode automatically. If not, note the frequency and tune manually.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Call the activator</div>
+            <p>Most activators work simplex. Listen first — activators are usually in a short
+            pile-up. When you hear a gap, give your callsign once, clearly.
+            Exchange a signal report and the park reference. You are done — that is a valid hunt!</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Log the contact</div>
+            <p>Log to your POTA/SOTA/WWFF account to earn credits toward awards.
+            For POTA, upload your log at <a href="https://pota.app" target="_blank" rel="noopener">pota.app</a>.
+            For SOTA, use <a href="https://www.sotawatch.org" target="_blank" rel="noopener">SOTAwatch</a>.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">FT8 activations</div>
+          <p>Many POTA activators work FT8, especially for longer paths. If the panel shows
+          a frequency like 14.090 MHz with mode FT8, switch WSJT-X to that frequency —
+          the activator will appear in your decode list. In FT8 you can work DX parks
+          that would otherwise be beyond SSB range with a modest station.</p>
+        </div>
+      </div>
+
+      <!-- ── Configuration ──────────────────────────────── -->
+      <h2>Configuration</h2>
+      <p>
+        Each programme panel can be shown or hidden independently from <strong>Settings → Panels</strong>.
+        Additional options under <strong>Settings → POTA</strong> (and equivalent for each programme):
+      </p>
+
+      <div class="info-box">
+        <div class="info-row"><span class="info-label">Show on map</span> Toggle map markers for this programme on/off without hiding the panel.</div>
+        <div class="info-row"><span class="info-label">Continent filter</span> Show only activators on your continent, or a specific continent. Useful for smaller screens.</div>
+        <div class="info-row"><span class="info-label">Mode filter</span> Show only CW, SSB, or FT8 activators.</div>
+        <div class="info-row"><span class="info-label">Audio alert</span> Play a tone when a new activator appears. Configurable per programme.</div>
+        <div class="info-row"><span class="info-label">Needs list</span> Enter park/summit references you still need for awards — those entries highlight in a different colour.</div>
+      </div>
+
+      <nav class="page-nav">
+        <a href="satellites.html" class="page-nav-link">
+          <span class="nav-arrow">←</span>
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Previous</span>
+            <span class="page-nav-title">Satellites</span>
+          </div>
+        </a>
+        <a href="rig-bridge.html" class="page-nav-link next">
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Next</span>
+            <span class="page-nav-title">Rig Bridge</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>

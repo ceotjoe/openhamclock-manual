@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>World Map — OpenHamClock Manual</title>
+  <meta name="description" content="How to use the OpenHamClock world map: DX paths, overlays, layers, markers, and the day/night terminator.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="mobile-header"></div>
+  <div id="sidebar"></div>
+
+  <main id="main">
+    <div class="content-wrap">
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">World Map</span>
+      </div>
+
+      <header class="page-header">
+        <div class="page-header-top">
+          <div>
+            <span class="page-number">Section 05</span>
+            <h1 class="page-title"><span class="title-icon">🗺️</span> World Map</h1>
+          </div>
+          <span class="badge badge-feature">Feature</span>
+        </div>
+        <p class="page-tagline">The map is the heart of OpenHamClock — a live, interactive globe that brings together DX spots, activations, satellite positions, propagation overlays, and real-world events in one view.</p>
+      </header>
+
+      <!-- ── Overview ───────────────────────────────────── -->
+      <h2>Overview</h2>
+      <p>
+        The world map is built on <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet.js</a>
+        and sits at the centre of the Modern and Classic layouts. It is not just a background image —
+        everything on it is live and interactive. Click any marker to open a popup with details and,
+        where relevant, a button to tune your radio directly to that frequency.
+      </p>
+      <p>
+        The map automatically centres on your home grid square at startup. It updates continuously:
+        DX spot markers refresh every 5 seconds, satellite positions every 5 seconds, POTA/SOTA
+        activators every 60 seconds.
+      </p>
+
+      <div class="figure">
+        <div class="figure-placeholder">
+          <span class="placeholder-icon">🗺️</span>
+          <span class="placeholder-label">Screenshot: World Map with DX paths and POTA markers</span>
+          <span style="font-size:0.75rem;opacity:0.5;">assets/img/screenshots/world-map-overview.png</span>
+        </div>
+        <div class="figure-caption">
+          The world map showing great-circle paths to recent DX spots (coloured lines),
+          POTA activator markers (green flags), and the day/night terminator.
+          Your home QTH is marked with a home icon at map centre.
+        </div>
+      </div>
+
+      <!-- ── Map markers ────────────────────────────────── -->
+      <h2>What's on the Map</h2>
+
+      <h3>Your home QTH</h3>
+      <p>
+        A <strong>home marker</strong> (🏠) marks your grid square centre at all times.
+        All great-circle paths are drawn from this point.
+      </p>
+
+      <h3>DX spot markers</h3>
+      <p>
+        Each active DX spot places a small coloured dot on the map at the DX station's approximate DXCC
+        entity location. Dots are colour-coded by band — the same colour scheme used in the DX Cluster panel:
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Colour</th><th>Band</th></tr></thead>
+          <tbody>
+            <tr><td><span style="display:inline-block;width:14px;height:14px;background:#ef4444;border-radius:50%;vertical-align:middle;margin-right:6px;"></span>Red</td><td>160 m</td></tr>
+            <tr><td><span style="display:inline-block;width:14px;height:14px;background:#f97316;border-radius:50%;vertical-align:middle;margin-right:6px;"></span>Orange</td><td>80 m</td></tr>
+            <tr><td><span style="display:inline-block;width:14px;height:14px;background:#eab308;border-radius:50%;vertical-align:middle;margin-right:6px;"></span>Yellow</td><td>40 m</td></tr>
+            <tr><td><span style="display:inline-block;width:14px;height:14px;background:#22c55e;border-radius:50%;vertical-align:middle;margin-right:6px;"></span>Green</td><td>20 m</td></tr>
+            <tr><td><span style="display:inline-block;width:14px;height:14px;background:#3b82f6;border-radius:50%;vertical-align:middle;margin-right:6px;"></span>Blue</td><td>17 m / 15 m</td></tr>
+            <tr><td><span style="display:inline-block;width:14px;height:14px;background:#8b5cf6;border-radius:50%;vertical-align:middle;margin-right:6px;"></span>Purple</td><td>12 m / 10 m</td></tr>
+            <tr><td><span style="display:inline-block;width:14px;height:14px;background:#ec4899;border-radius:50%;vertical-align:middle;margin-right:6px;"></span>Pink</td><td>6 m and above (VHF+)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Great-circle paths</h3>
+      <p>
+        When you click a DX spot — either in the DX Cluster panel or directly on the map — OpenHamClock
+        draws the <strong>great-circle path</strong> from your QTH to the DX station as a curved line on the globe.
+        This is the actual shortest-distance radio propagation path, not a straight line on a flat map.
+      </p>
+      <p>
+        The bearing (in degrees true) and distance (in km or miles, depending on your units setting) are
+        shown in the DX Location panel. This is exactly the heading you would point a beam antenna.
+      </p>
+
+      <h3>POTA / SOTA / WWFF / WWBOTA markers</h3>
+      <p>
+        Active park and summit activators appear as distinct icons on the map. Click any one to see
+        the callsign, park/summit reference, and current frequency. If rig control is configured, a
+        <strong>Tune</strong> button tunes your radio immediately. See <a href="pota-sota.html">POTA / SOTA</a> for full details.
+      </p>
+
+      <h3>Satellite positions</h3>
+      <p>
+        Active ham satellites move in real time across the map with their ground track projected ahead.
+        A shaded ellipse shows the current footprint — the area on Earth that can currently hear or work
+        the satellite. See <a href="satellites.html">Satellites</a> for full details.
+      </p>
+
+      <!-- ── Day/night terminator ───────────────────────── -->
+      <h2>Day / Night Terminator</h2>
+      <p>
+        The map shows the current boundary between day and night as a soft gradient overlay.
+        This is more than aesthetics — it is directly useful for HF propagation:
+      </p>
+      <ul>
+        <li><strong>Grey-line propagation</strong> — the terminator edge (grey line) is a zone of unusually strong long-distance propagation, especially on 80 m and 40 m at dawn and dusk.</li>
+        <li><strong>Night-side conditions</strong> — lower frequency bands (160 m, 80 m, 40 m) become quieter and longer-range after dark due to the disappearance of the D-layer absorption.</li>
+        <li><strong>Day-side conditions</strong> — higher bands (20 m, 17 m, 15 m, 10 m) open up as solar UV ionises the F-layer.</li>
+      </ul>
+      <p>
+        The terminator moves continuously — you can literally watch the grey line sweep across the map as
+        the Earth rotates. This is one of the most genuinely useful features for timing DX contacts.
+      </p>
+
+      <!-- ── Map layers ─────────────────────────────────── -->
+      <h2>Map Layers</h2>
+      <p>
+        OpenHamClock has a plugin-based layer system. Layers are overlaid on top of the base map and
+        can be toggled individually from the <strong>Layers button</strong> (stack icon) in the map toolbar.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Layer</th><th>Source</th><th>What it shows</th><th>Refresh</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Aurora</strong></td>
+              <td>NOAA OVATION</td>
+              <td>Predicted aurora oval — where the northern/southern lights are active right now. Colour-coded by intensity.</td>
+              <td>30 min</td>
+            </tr>
+            <tr>
+              <td><strong>Earthquakes</strong></td>
+              <td>USGS</td>
+              <td>Recent earthquakes (M2.5+) as circles sized by magnitude.</td>
+              <td>15 min</td>
+            </tr>
+            <tr>
+              <td><strong>Precipitation</strong></td>
+              <td>Open-Meteo</td>
+              <td>Current rain and snow radar overlay.</td>
+              <td>15 min</td>
+            </tr>
+            <tr>
+              <td><strong>Lightning</strong></td>
+              <td>Blitzortung</td>
+              <td>Recent lightning strikes as small flash markers.</td>
+              <td>5 min</td>
+            </tr>
+            <tr>
+              <td><strong>Wildfires</strong></td>
+              <td>NASA FIRMS</td>
+              <td>Active wildfire detections from satellite thermal imaging.</td>
+              <td>1 hr</td>
+            </tr>
+            <tr>
+              <td><strong>Winlink Gateways</strong></td>
+              <td>Winlink.org</td>
+              <td>Active Winlink radio email gateway stations.</td>
+              <td>1 hr</td>
+            </tr>
+            <tr>
+              <td><strong>Active Users</strong></td>
+              <td>Internal</td>
+              <td>Grid squares of other users currently connected to your OpenHamClock instance.</td>
+              <td>Real-time</td>
+            </tr>
+            <tr>
+              <td><strong>VOACAP</strong></td>
+              <td>VOACAP Online</td>
+              <td>HF propagation reliability predictions for the selected band and hour.</td>
+              <td>On demand</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">Aurora and the aurora oval for VHF</div>
+          <p>The Aurora layer is particularly useful for VHF/UHF operators chasing aurora scatter propagation.
+          When the aurora oval extends to your latitude, aurora backscatter contacts become possible on 2 m and 70 cm.
+          High K-index in the Space Weather panel is your first alert; the Aurora layer shows the actual footprint.</p>
+        </div>
+      </div>
+
+      <!-- ── Map controls ───────────────────────────────── -->
+      <h2>Map Controls</h2>
+
+      <h3>Toolbar buttons</h3>
+      <div class="info-box">
+        <div class="info-row"><span class="info-label">🏠 Home</span> Re-centres the map on your grid square.</div>
+        <div class="info-row"><span class="info-label">🔍 Zoom</span> Standard +/− buttons, or use the scroll wheel on desktop.</div>
+        <div class="info-row"><span class="info-label">⊞ Layers</span> Opens the layer toggle panel — enable or disable any overlay.</div>
+        <div class="info-row"><span class="info-label">🗺 Base map</span> Switch between OpenStreetMap, satellite, or dark terrain base tiles.</div>
+        <div class="info-row"><span class="info-label">⤢ Fullscreen</span> Expands the map to fill the entire browser window.</div>
+      </div>
+
+      <h3>Clicking markers</h3>
+      <p>
+        Clicking any marker on the map opens a popup with details specific to that marker type:
+      </p>
+      <ul>
+        <li><strong>DX spot</strong> — callsign, frequency, mode, band, spotter, and a <em>Tune</em> button (if rig control is enabled).</li>
+        <li><strong>POTA/SOTA marker</strong> — callsign, park/summit reference and name, frequency, and a <em>Tune</em> button.</li>
+        <li><strong>Satellite</strong> — satellite name, altitude, range, Doppler shift, and next visible pass time.</li>
+        <li><strong>APRS station</strong> — callsign, grid, last heard time, speed/altitude (if reported).</li>
+      </ul>
+
+      <!-- ── Configuring map display ────────────────────── -->
+      <h2>Configuring What the Map Shows</h2>
+      <p>
+        Open <strong>Settings → Map</strong> in the browser to configure:
+      </p>
+      <ul>
+        <li><strong>Show DX paths</strong> — toggle great-circle lines on/off (useful if the map feels cluttered).</li>
+        <li><strong>Show DX markers</strong> — toggle spot dots on/off independently from path lines.</li>
+        <li><strong>Show POTA / SOTA / WWFF / WWBOTA markers</strong> — toggle each programme independently.</li>
+        <li><strong>Show satellite tracks</strong> — toggle ground tracks and footprints.</li>
+        <li><strong>DX path duration</strong> — how long a path stays drawn after the spot ages (in minutes).</li>
+        <li><strong>Map projection</strong> — Mercator (default) or Azimuthal Equidistant (your QTH at centre, great circles appear as straight lines).</li>
+      </ul>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-body">
+          <div class="callout-title">Azimuthal Equidistant projection</div>
+          <p>Also called a "ham radio polar map", this projection places your QTH at the dead centre of the map.
+          Every straight line drawn from the centre is a true great-circle bearing — exactly where to point
+          your beam. Many experienced DXers prefer this view for antenna aiming. Switch to it in Settings → Map → Projection.</p>
+        </div>
+      </div>
+
+      <nav class="page-nav">
+        <a href="configuration.html" class="page-nav-link">
+          <span class="nav-arrow">←</span>
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Previous</span>
+            <span class="page-nav-title">Configuration</span>
+          </div>
+        </a>
+        <a href="dx-cluster.html" class="page-nav-link next">
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Next</span>
+            <span class="page-nav-title">DX Cluster</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction — OpenHamClock Manual</title>
+  <meta name="description" content="What is OpenHamClock, who it is for, and what it can do for your amateur radio station.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="mobile-header"></div>
+  <div id="sidebar"></div>
+
+  <main id="main">
+    <div class="content-wrap">
+
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">Introduction</span>
+      </div>
+
+      <!-- Page header -->
+      <header class="page-header">
+        <div class="page-header-top">
+          <div>
+            <span class="page-number">Section 01</span>
+            <h1 class="page-title"><span class="title-icon">🏠</span> Introduction</h1>
+          </div>
+          <span class="badge badge-intro">Intro</span>
+        </div>
+        <p class="page-tagline">What OpenHamClock is, where it came from, and why radio amateurs around the world run it on their shack screens.</p>
+      </header>
+
+      <!-- ── What is OpenHamClock? ─────────────────────── -->
+      <h2>What is OpenHamClock?</h2>
+      <p>
+        OpenHamClock is a <strong>free, open-source, web-based dashboard for amateur radio operators</strong>.
+        Open it in any browser and you get a live, unified view of everything happening on the bands right now —
+        DX spots, space weather, active POTA/SOTA activators, WSJT-X decodes, satellite passes, rig frequency,
+        and much more — all on one screen, updating in real time.
+      </p>
+      <p>
+        Unlike traditional shack software that locks you to a single computer, OpenHamClock runs as a small
+        server you install once (on a Raspberry Pi, a spare PC, or in the cloud) and then open on
+        <em>any</em> device — a tablet on the operating table, a second monitor, a phone, or even a wall-mounted
+        display in the shack. No installation needed on each client; just a browser.
+      </p>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">Try it before installing</div>
+          <p>The hosted version at <a href="https://openhamclock.com" target="_blank" rel="noopener">openhamclock.com</a>
+          lets you explore the full dashboard with no sign-up and no installation.
+          Enter your callsign and grid square and you're live in under a minute.</p>
+        </div>
+      </div>
+
+      <!-- ── History ───────────────────────────────────── -->
+      <h2>History &amp; the Original HamClock</h2>
+      <p>
+        The inspiration for OpenHamClock is <strong>HamClock</strong>, the well-loved shack clock and propagation
+        display written by Elwood Downey, WB0OEW. HamClock runs as a standalone C application directly on a
+        Raspberry Pi screen and has a devoted following among DXers and contest operators for its clean
+        readability and zero-dependency design.
+      </p>
+      <p>
+        OpenHamClock was created by <strong>Chris Hetherington, K0CJH</strong>, as a complete reimagining of that
+        concept for the modern web. Rather than a single-screen C program, OpenHamClock is built as a
+        <strong>React + Node.js application</strong> — 30+ independent panels, six layouts, five themes, sixteen
+        language translations, and a plugin system for map layers. Where WB0OEW's HamClock is elegant
+        minimalism, OpenHamClock aims for depth: every piece of data a serious DXer, contester, or POTA
+        activator could want, in one place.
+      </p>
+      <p>
+        Both tools happily co-exist, and many operators run them side by side.
+      </p>
+
+      <!-- ── Who is it for? ────────────────────────────── -->
+      <h2>Who Is It For?</h2>
+      <div class="two-col">
+        <div>
+          <h3>🎯 DXers</h3>
+          <p>Real-time DX Cluster spots colour-coded by band, a one-click path from spot to map to radio tuning,
+          great-circle bearings, and rare DXCC expedition alerts. Everything you need to chase the next new entity
+          without switching windows.</p>
+
+          <h3>🏆 Contest Operators</h3>
+          <p>Active contest calendar, band condition indicators, live spot flow, and PSKReporter coverage.
+          Know which bands are open before you spin the dial.</p>
+
+          <h3>🏔️ POTA &amp; SOTA Activators</h3>
+          <p>Live activator lists for Parks on the Air, Summits on the Air, WWFF, and WWBOTA,
+          with map markers showing exactly where each operator is transmitting.</p>
+        </div>
+        <div>
+          <h3>📡 Digital Mode Enthusiasts</h3>
+          <p>Live FT8, FT4, JT65, and WSPR decodes from WSJT-X, PSKReporter receive maps, RBN skimmer
+          reports, and WSPR propagation heatmaps — all in real time.</p>
+
+          <h3>🛰️ Satellite Operators</h3>
+          <p>SGP4 real-time orbital tracking for 40+ amateur satellites. See pass windows,
+          Doppler shift, range, and footprint overlaid on the world map.</p>
+
+          <h3>🆘 EmComm Operators</h3>
+          <p>A dedicated Emergency Communications layout with APRS-IS tracking, NWS weather alerts,
+          FEMA shelter maps, net check-in rosters, and resource aggregation tokens.</p>
+        </div>
+      </div>
+      <p>
+        Even if you are brand new to amateur radio, OpenHamClock is a great learning tool.
+        Watching real DX spots appear on the map, seeing space weather indices change as a solar flare passes,
+        or tracking an ISS pass overhead makes the hobby tangible in a way textbooks cannot.
+      </p>
+
+      <!-- ── Feature overview ──────────────────────────── -->
+      <h2>Feature Overview</h2>
+      <p>OpenHamClock ships with more than 30 independent panels. Here are the main sections covered in this manual:</p>
+
+      <div class="feature-grid">
+        <a href="world-map.html" class="feature-card">
+          <div class="card-icon">🗺️</div>
+          <div class="card-title">World Map</div>
+          <div class="card-desc">Interactive Leaflet map with DX paths, POTA/SOTA markers, satellite ground tracks, day/night terminator, and a rich layer system.</div>
+        </a>
+        <a href="dx-cluster.html" class="feature-card">
+          <div class="card-icon">📶</div>
+          <div class="card-title">DX Cluster</div>
+          <div class="card-desc">Live spots from DX Spider refreshed every 5 seconds. Band colour-coding, zone/mode filters, watchlist alerts, and audio tones.</div>
+        </a>
+        <a href="space-weather.html" class="feature-card">
+          <div class="card-icon">🌤️</div>
+          <div class="card-title">Space Weather</div>
+          <div class="card-desc">Solar Flux Index, K-index, sunspot number, X-ray flux, and real-time band condition indicators. Know the bands before you call CQ.</div>
+        </a>
+        <a href="satellites.html" class="feature-card">
+          <div class="card-icon">🛰️</div>
+          <div class="card-title">Satellites</div>
+          <div class="card-desc">Real-time SGP4 tracking for 40+ amateur satellites. Pass windows, Doppler, range, and footprint on the map.</div>
+        </a>
+        <a href="pota-sota.html" class="feature-card">
+          <div class="card-icon">🏔️</div>
+          <div class="card-title">POTA / SOTA / WWFF</div>
+          <div class="card-desc">Active park and summit activators with callsign, frequency, and map position. Never miss an activation in progress.</div>
+        </a>
+        <a href="rig-bridge.html" class="feature-card">
+          <div class="card-icon">🎛️</div>
+          <div class="card-title">Rig Bridge</div>
+          <div class="card-desc">Click any spot and your radio tunes automatically. Supports 22 radio plugins: Yaesu CAT, Icom CI-V, Kenwood, Elecraft, SDR TCI.</div>
+        </a>
+        <a href="wsjt-ft8.html" class="feature-card">
+          <div class="card-icon">📻</div>
+          <div class="card-title">WSJT-X / FT8</div>
+          <div class="card-desc">Live FT8, FT4, JT65, WSPR decodes. Local UDP integration or cloud relay agent. PSKReporter MQTT and RBN reports.</div>
+        </a>
+        <a href="themes-profiles.html" class="feature-card">
+          <div class="card-icon">🎨</div>
+          <div class="card-title">Themes &amp; Profiles</div>
+          <div class="card-desc">Five built-in themes, six layouts, and named profiles to save and restore your exact configuration.</div>
+        </a>
+      </div>
+
+      <!-- ── At a glance ───────────────────────────────── -->
+      <h2>At a Glance</h2>
+      <div class="info-box">
+        <div class="info-row"><span class="info-label">Current version</span> 26.3.x (weekly releases)</div>
+        <div class="info-row"><span class="info-label">Author</span> Chris Hetherington, K0CJH</div>
+        <div class="info-row"><span class="info-label">License</span> MIT — free to use, modify, and self-host</div>
+        <div class="info-row"><span class="info-label">Languages</span> 16 — English, German, Spanish, French, Japanese, and more</div>
+        <div class="info-row"><span class="info-label">Themes</span> Dark, Light, Legacy, Retro, Custom</div>
+        <div class="info-row"><span class="info-label">Layouts</span> Modern, Classic, Dockable, Tablet, Compact, EmComm</div>
+        <div class="info-row"><span class="info-label">Panels</span> 30+ independent data panels</div>
+        <div class="info-row"><span class="info-label">Supported radios</span> 22 rig control plugins (Yaesu, Icom, Kenwood, Elecraft, SDR…)</div>
+        <div class="info-row"><span class="info-label">Source code</span> <a href="https://github.com/accius/openhamclock" target="_blank" rel="noopener">github.com/accius/openhamclock</a></div>
+        <div class="info-row"><span class="info-label">Hosted version</span> <a href="https://openhamclock.com" target="_blank" rel="noopener">openhamclock.com</a></div>
+      </div>
+
+      <!-- ── Screenshot placeholder ────────────────────── -->
+      <h2>The Dashboard</h2>
+      <p>The default <strong>Modern layout</strong> places the world map in the centre, DX spots and propagation data on the left, and POTA/SOTA, space weather, and rig information on the right. Every panel can be shown, hidden, or rearranged in Settings.</p>
+
+      <div class="figure">
+        <div class="figure-placeholder">
+          <span class="placeholder-icon">🗺️</span>
+          <span class="placeholder-label">Screenshot: OpenHamClock dashboard — Modern layout</span>
+          <span style="font-size:0.75rem;opacity:0.5;">assets/img/screenshots/dashboard-overview.png</span>
+        </div>
+        <div class="figure-caption">
+          The OpenHamClock Modern layout. The interactive world map dominates the centre;
+          DX Cluster spots appear on the left; space weather, POTA activators, and rig info on the right.
+        </div>
+      </div>
+
+      <!-- ── What you need ─────────────────────────────── -->
+      <h2>What You Need to Get Started</h2>
+      <p>
+        Very little. OpenHamClock runs wherever Node.js or Docker runs. The quickest paths are:
+      </p>
+      <ul>
+        <li><strong>Browser only</strong> — go to <a href="https://openhamclock.com" target="_blank" rel="noopener">openhamclock.com</a>, enter your callsign. Done.</li>
+        <li><strong>Raspberry Pi</strong> — one <code>curl</code> command installs and configures everything, including a kiosk-mode browser that launches on boot.</li>
+        <li><strong>Docker</strong> — one <code>docker compose up</code> and you are running in under two minutes.</li>
+        <li><strong>Windows / macOS / Linux</strong> — clone the repo, run <code>npm start</code>.</li>
+      </ul>
+      <p>
+        Head to <a href="quickstart.html">Quick Start</a> to be up and running in under five minutes,
+        or jump straight to <a href="installation.html">Installation</a> for the full platform-by-platform guide.
+      </p>
+
+      <!-- ── Page nav ───────────────────────────────────── -->
+      <nav class="page-nav">
+        <span></span>
+        <a href="quickstart.html" class="page-nav-link next">
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Next</span>
+            <span class="page-nav-title">Quick Start</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+      </nav>
+
+    </div><!-- /content-wrap -->
+  </main>
+
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>

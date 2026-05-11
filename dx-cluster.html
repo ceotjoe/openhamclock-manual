@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DX Cluster — OpenHamClock Manual</title>
+  <meta name="description" content="How to use the OpenHamClock DX Cluster panel: spots, filters, watchlist, band colours, and audio alerts.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="mobile-header"></div>
+  <div id="sidebar"></div>
+
+  <main id="main">
+    <div class="content-wrap">
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">DX Cluster</span>
+      </div>
+
+      <header class="page-header">
+        <div class="page-header-top">
+          <div>
+            <span class="page-number">Section 06</span>
+            <h1 class="page-title"><span class="title-icon">📶</span> DX Cluster</h1>
+          </div>
+          <span class="badge badge-feature">Feature</span>
+        </div>
+        <p class="page-tagline">Live DX spots refreshed every 5 seconds, colour-coded by band, with powerful filtering tools and a personal watchlist with audio alerts.</p>
+      </header>
+
+      <!-- ── What is a DX cluster? ──────────────────────── -->
+      <h2>What Is a DX Cluster?</h2>
+      <p>
+        A <strong>DX cluster</strong> is a network of servers that amateur radio operators use to
+        announce interesting stations they have just heard or worked. When you hear a rare station,
+        you post a <em>spot</em>: your callsign (the spotter), the DX callsign, frequency, and mode.
+        That spot propagates instantly to thousands of operators worldwide.
+      </p>
+      <p>
+        OpenHamClock connects to the global DX Spider cluster network and displays the live spot feed,
+        refreshed every <strong>5 seconds</strong>. Each spot shows the DX callsign, frequency, band,
+        mode, spotter, and how long ago it was posted. The most recent spots appear at the top.
+      </p>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-body">
+          <div class="callout-title">You do not need to log in to read spots</div>
+          <p>The DX cluster feed is read-only in OpenHamClock — you can see every spot without
+          a callsign or account. Posting your own spots requires a direct telnet connection to a cluster
+          node, which is outside the scope of this dashboard.</p>
+        </div>
+      </div>
+
+      <!-- ── Reading the panel ──────────────────────────── -->
+      <h2>Reading the DX Cluster Panel</h2>
+
+      <div class="figure">
+        <div class="figure-placeholder">
+          <span class="placeholder-icon">📶</span>
+          <span class="placeholder-label">Screenshot: DX Cluster panel with annotated callouts</span>
+          <span style="font-size:0.75rem;opacity:0.5;">assets/img/screenshots/dx-cluster-panel.png</span>
+        </div>
+        <div class="figure-caption">
+          The DX Cluster panel. Each row is one spot: band colour strip on the left, DX callsign,
+          frequency, mode, spotter callsign, and age. The toolbar at the top controls filters.
+        </div>
+      </div>
+
+      <ul class="annotation-list">
+        <li><span class="annotation">1</span> <strong>Band colour strip</strong> — matches the colour of the marker on the world map for that band.</li>
+        <li><span class="annotation">2</span> <strong>DX callsign</strong> — the station being spotted. Click to draw the great-circle path on the map and open the DX Location panel.</li>
+        <li><span class="annotation">3</span> <strong>Frequency</strong> — in kHz. Click to tune your rig (if Rig Bridge is configured).</li>
+        <li><span class="annotation">4</span> <strong>Mode</strong> — CW, SSB, FT8, RTTY, etc. May be blank if the spotter did not include it.</li>
+        <li><span class="annotation">5</span> <strong>Spotter</strong> — the operator who posted the spot, with their continent shown as a small flag.</li>
+        <li><span class="annotation">6</span> <strong>Age</strong> — how long ago the spot was posted. Spots older than your retention window (default 30 min) are automatically removed.</li>
+      </ul>
+
+      <!-- ── Band colour coding ─────────────────────────── -->
+      <h2>Band Colour Coding</h2>
+      <p>
+        Every spot is colour-coded by band, making it immediately obvious which bands are active
+        without reading the frequency numbers. The same palette is used on the world map markers,
+        the Band Conditions panel, and the propagation indicators.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Colour</th><th>Band</th><th>Frequency range</th></tr></thead>
+          <tbody>
+            <tr><td><span style="display:inline-block;width:12px;height:12px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Deep red</td><td>160 m</td><td>1.8 – 2.0 MHz</td></tr>
+            <tr><td><span style="display:inline-block;width:12px;height:12px;background:#ea580c;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Orange</td><td>80 m</td><td>3.5 – 4.0 MHz</td></tr>
+            <tr><td><span style="display:inline-block;width:12px;height:12px;background:#ca8a04;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Yellow</td><td>40 m</td><td>7.0 – 7.3 MHz</td></tr>
+            <tr><td><span style="display:inline-block;width:12px;height:12px;background:#15803d;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Green</td><td>30 m</td><td>10.1 – 10.15 MHz</td></tr>
+            <tr><td><span style="display:inline-block;width:12px;height:12px;background:#0284c7;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Blue</td><td>20 m</td><td>14.0 – 14.35 MHz</td></tr>
+            <tr><td><span style="display:inline-block;width:12px;height:12px;background:#0369a1;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Dark blue</td><td>17 m</td><td>18.068 – 18.168 MHz</td></tr>
+            <tr><td><span style="display:inline-block;width:12px;height:12px;background:#4f46e5;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Indigo</td><td>15 m</td><td>21.0 – 21.45 MHz</td></tr>
+            <tr><td><span style="display:inline-block;width:12px;height:12px;background:#7c3aed;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Purple</td><td>12 m</td><td>24.89 – 24.99 MHz</td></tr>
+            <tr><td><span style="display:inline-block;width:12px;height:12px;background:#be185d;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Magenta</td><td>10 m</td><td>28.0 – 29.7 MHz</td></tr>
+            <tr><td><span style="display:inline-block;width:12px;height:12px;background:#0f766e;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Teal</td><td>6 m</td><td>50 – 54 MHz</td></tr>
+            <tr><td><span style="display:inline-block;width:12px;height:12px;background:#64748b;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Grey</td><td>2 m and above</td><td>144 MHz+</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── Filters ────────────────────────────────────── -->
+      <h2>Filtering Spots</h2>
+      <p>
+        The DX Cluster panel can quickly fill with hundreds of spots. The filter toolbar lets you
+        narrow the view to exactly what interests you. Filters are per-browser and persist between sessions.
+      </p>
+
+      <h3>Band filter</h3>
+      <p>
+        Click any band button in the toolbar to show only spots on that band. Click again to deselect.
+        Multiple bands can be active at once. Clicking <strong>ALL</strong> resets to the full feed.
+      </p>
+
+      <h3>Mode filter</h3>
+      <p>
+        Filter by operating mode: <strong>CW</strong>, <strong>SSB</strong>, <strong>FT8</strong>,
+        <strong>RTTY</strong>, <strong>Digital</strong>, or <strong>All</strong>.
+      </p>
+
+      <h3>CQ Zone filter</h3>
+      <p>
+        Show only spots <em>from</em> a specific CQ zone, or spots <em>to</em> a specific zone.
+        Useful for contest operators working a specific multiplier zone.
+      </p>
+
+      <h3>DXCC filter</h3>
+      <p>
+        Filter to show only spots from DX entities on your <strong>needs list</strong>.
+        Enter the DXCC entity prefixes or names in the needs list in Settings → DX Cluster,
+        and enable the needs-list filter in the toolbar to instantly highlight what you still need.
+      </p>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">Contesting tip: narrow before you start</div>
+          <p>Before a contest, set the band filter to the bands you plan to run, and the mode
+          filter to CW or SSB. This dramatically reduces noise in the panel and lets you focus
+          on mults appearing on your active bands only.</p>
+        </div>
+      </div>
+
+      <!-- ── Watchlist ──────────────────────────────────── -->
+      <h2>Watchlist &amp; Audio Alerts</h2>
+      <p>
+        The <strong>watchlist</strong> is a personal list of callsigns (or callsign prefixes) that you
+        are actively chasing. When any spot matching an entry appears in the feed, OpenHamClock
+        highlights that row in the panel and can play an audio tone.
+      </p>
+
+      <h3>Adding callsigns to your watchlist</h3>
+      <p>Open <strong>Settings → DX Cluster → Watchlist</strong> and enter callsigns one per line.
+      You can use partial prefixes:</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">Watchlist entries (examples)</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre>3B8            <span class="comment"># any Mauritius station</span>
+VK9X           <span class="comment"># Christmas Island prefix</span>
+ZL9            <span class="comment"># Campbell Island</span>
+VP2E           <span class="comment"># Anguilla</span>
+OA4TT          <span class="comment"># specific callsign</span></pre>
+      </div>
+
+      <h3>Audio alerts</h3>
+      <p>
+        Enable <strong>Settings → DX Cluster → Audio alert on watchlist match</strong>.
+        A short tone plays each time a watchlist callsign appears in a new spot.
+        The tone volume is adjustable, and you can choose between a soft chime or a more
+        attention-grabbing beep — useful if you are operating at the radio while the dashboard
+        runs on a second screen.
+      </p>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">DXpedition chasing</div>
+          <p>When a major DXpedition is on the air (e.g. a rare Pacific island),
+          add their callsign(s) to your watchlist before they activate.
+          The moment their first spot hits the cluster you will hear the alert,
+          no matter what else you are doing at the keyboard.</p>
+        </div>
+      </div>
+
+      <!-- ── Spot retention ─────────────────────────────── -->
+      <h2>Spot Retention</h2>
+      <p>
+        By default spots are kept in the panel for <strong>30 minutes</strong> before being removed.
+        You can change this in <code>.env</code>:
+      </p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">.env</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="key">SPOT_RETENTION_MINUTES</span>=<span class="value">30</span>   <span class="comment"># 5–120 is a practical range</span></pre>
+      </div>
+      <p>
+        A shorter window (10–15 min) keeps the panel focused on the freshest activity.
+        A longer window (60 min) is useful for reviewing what was active over the past hour —
+        helpful during a contest when you return to the radio after a break.
+      </p>
+
+      <!-- ── Data sources ───────────────────────────────── -->
+      <h2>Data Sources</h2>
+      <p>
+        OpenHamClock can pull spots from several sources, configured via <code>DX_CLUSTER_SOURCE</code>
+        in <code>.env</code>. See <a href="configuration.html#dx-cluster">Configuration → DX Cluster Source</a>
+        for the full options. By default, <code>auto</code> mode tries sources in priority order and falls
+        back gracefully if one is unavailable.
+      </p>
+      <p>
+        The <strong>DX Spider proxy</strong> is the most real-time source — it maintains a persistent
+        telnet connection to a DX Spider cluster node and bridges it to the OpenHamClock API.
+        This is what you want for serious DXing or contesting.
+      </p>
+
+      <nav class="page-nav">
+        <a href="world-map.html" class="page-nav-link">
+          <span class="nav-arrow">←</span>
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Previous</span>
+            <span class="page-nav-title">World Map</span>
+          </div>
+        </a>
+        <a href="space-weather.html" class="page-nav-link next">
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Next</span>
+            <span class="page-nav-title">Space Weather</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>

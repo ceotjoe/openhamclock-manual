@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reference — OpenHamClock Manual</title>
+  <meta name="description" content="Complete .env variable reference, keyboard shortcuts, data sources, ham radio glossary, and credits for OpenHamClock.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="mobile-header"></div>
+  <div id="sidebar"></div>
+
+  <main id="main">
+    <div class="content-wrap">
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">Reference</span>
+      </div>
+
+      <header class="page-header">
+        <div class="page-header-top">
+          <div>
+            <span class="page-number">Section 14</span>
+            <h1 class="page-title"><span class="title-icon">📖</span> Reference</h1>
+          </div>
+          <span class="badge badge-ref">Ref</span>
+        </div>
+        <p class="page-tagline">Scan, don't read. Complete .env variable table, keyboard shortcuts, all data sources, a ham radio glossary, and credits.</p>
+      </header>
+
+      <!-- ── .env variables ─────────────────────────────── -->
+      <h2 id="env-vars">Complete <code>.env</code> Variable Reference</h2>
+      <p>Every variable OpenHamClock reads from <code>.env</code>, with its default value and valid options.</p>
+
+      <h3>Station</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>CALLSIGN</code></td><td><em>required</em></td><td>Your amateur radio callsign (e.g. <code>K0CJH</code>)</td></tr>
+            <tr><td><code>LOCATOR</code></td><td><em>required</em></td><td>Maidenhead grid locator, 4 or 6 characters (e.g. <code>IO91wm</code>)</td></tr>
+            <tr><td><code>LATITUDE</code></td><td>from LOCATOR</td><td>Override latitude in decimal degrees</td></tr>
+            <tr><td><code>LONGITUDE</code></td><td>from LOCATOR</td><td>Override longitude in decimal degrees</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Server</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>PORT</code></td><td><code>3000</code></td><td>Web server port</td></tr>
+            <tr><td><code>HOST</code></td><td><code>localhost</code></td><td>Bind address. Use <code>0.0.0.0</code> for network access</td></tr>
+            <tr><td><code>TRUST_PROXY</code></td><td><code>false</code></td><td>Set <code>true</code> behind nginx / Caddy / Railway</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Security</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>API_WRITE_KEY</code></td><td><em>none</em></td><td>Secret key for POST endpoints. Required for internet-facing installs.</td></tr>
+            <tr><td><code>CORS_ORIGINS</code></td><td><em>none</em></td><td>Comma-separated extra CORS origins (e.g. <code>https://yourdomain.com</code>)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Display Defaults</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Default</th><th>Valid values</th></tr></thead>
+          <tbody>
+            <tr><td><code>THEME</code></td><td><code>dark</code></td><td><code>dark</code> · <code>light</code> · <code>legacy</code> · <code>retro</code> · <code>custom</code></td></tr>
+            <tr><td><code>LAYOUT</code></td><td><code>modern</code></td><td><code>modern</code> · <code>classic</code> · <code>dockable</code> · <code>tablet</code> · <code>compact</code> · <code>emcomm</code></td></tr>
+            <tr><td><code>DISTUNITS</code></td><td><code>imperial</code></td><td><code>imperial</code> · <code>metric</code></td></tr>
+            <tr><td><code>TEMPUNITS</code></td><td><code>imperial</code></td><td><code>imperial</code> · <code>metric</code></td></tr>
+            <tr><td><code>TIME_FORMAT</code></td><td><code>24</code></td><td><code>12</code> · <code>24</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Settings Sync</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>SETTINGS_SYNC</code></td><td><code>false</code></td><td>Save display settings server-side. Enable for single-operator Pi/self-hosted installs.</td></tr>
+            <tr><td><code>SETTINGS_FILE</code></td><td><code>./data/settings.json</code></td><td>Path to the settings file when SETTINGS_SYNC is enabled</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>DX Cluster</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>DX_CLUSTER_SOURCE</code></td><td><code>auto</code></td><td><code>auto</code> · <code>proxy</code> · <code>hamqth</code> · <code>dxspider</code></td></tr>
+            <tr><td><code>SPOT_RETENTION_MINUTES</code></td><td><code>30</code></td><td>How long to keep spots in the panel (minutes)</td></tr>
+            <tr><td><code>DXSPIDER_PROXY_URL</code></td><td><em>none</em></td><td>URL of a self-hosted DX Spider telnet-to-HTTP proxy</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>WSJT-X</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>WSJTX_ENABLED</code></td><td><code>false</code></td><td>Enable WSJT-X UDP listener</td></tr>
+            <tr><td><code>WSJTX_UDP_PORT</code></td><td><code>2237</code></td><td>UDP port for WSJT-X packets</td></tr>
+            <tr><td><code>WSJTX_MULTICAST_ADDRESS</code></td><td><em>none</em></td><td>Multicast group address for multi-instance WSJT-X setups</td></tr>
+            <tr><td><code>WSJTX_RELAY_KEY</code></td><td><em>none</em></td><td>Authentication key for the wsjtx-relay agent (cloud installs)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Rig Control</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>RIG_ENABLED</code></td><td><code>false</code></td><td>Enable direct server-side rig control</td></tr>
+            <tr><td><code>RIG_TYPE</code></td><td><em>none</em></td><td><code>yaesu-cat</code> · <code>icom-ci-v</code> · <code>kenwood</code> · <code>elecraft</code> · <code>tci</code> · <code>hamlib</code></td></tr>
+            <tr><td><code>RIG_SERIAL_PORT</code></td><td><em>none</em></td><td>Serial port (e.g. <code>/dev/ttyUSB0</code>, <code>COM4</code>)</td></tr>
+            <tr><td><code>RIG_BAUD_RATE</code></td><td><code>9600</code></td><td>Serial baud rate</td></tr>
+            <tr><td><code>RIG_CI_V_ADDRESS</code></td><td><code>0x94</code></td><td>Icom CI-V address (hex). IC-7300=0x94, IC-705=0xA4, IC-9700=0xA2</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>External API Keys</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>QRZ_USERNAME</code></td><td><em>none</em></td><td>QRZ.com username for callsign lookups</td></tr>
+            <tr><td><code>QRZ_PASSWORD</code></td><td><em>none</em></td><td>QRZ.com password</td></tr>
+            <tr><td><code>VITE_AMBIENT_APP_KEY</code></td><td><em>none</em></td><td>Ambient Weather application key</td></tr>
+            <tr><td><code>VITE_AMBIENT_API_KEY</code></td><td><em>none</em></td><td>Ambient Weather API key</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Auto-Update</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>AUTO_UPDATE_ENABLED</code></td><td><code>false</code></td><td>Enable automatic git-based updates</td></tr>
+            <tr><td><code>AUTO_UPDATE_INTERVAL_MINUTES</code></td><td><code>60</code></td><td>How often to check for updates (minutes)</td></tr>
+            <tr><td><code>AUTO_UPDATE_ON_START</code></td><td><code>false</code></td><td>Check for updates at startup</td></tr>
+            <tr><td><code>AUTO_UPDATE_EXIT_AFTER</code></td><td><code>true</code></td><td>Exit after updating so systemd/pm2 can restart</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="section-divider">
+
+      <!-- ── Keyboard shortcuts ─────────────────────────── -->
+      <h2 id="keyboard">Keyboard Shortcuts</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Key</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><kbd>?</kbd></td><td>Show keyboard shortcut help overlay</td></tr>
+            <tr><td><kbd>S</kbd></td><td>Open Settings panel</td></tr>
+            <tr><td><kbd>M</kbd></td><td>Focus / centre the world map</td></tr>
+            <tr><td><kbd>F</kbd></td><td>Toggle map fullscreen</td></tr>
+            <tr><td><kbd>L</kbd></td><td>Open Layers panel (map overlays)</td></tr>
+            <tr><td><kbd>Esc</kbd></td><td>Close any open panel or popup</td></tr>
+            <tr><td><kbd>1</kbd> – <kbd>9</kbd></td><td>Switch to layout preset 1–9 (if configured)</td></tr>
+            <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Step through Solar panel views</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="section-divider">
+
+      <!-- ── Data sources ───────────────────────────────── -->
+      <h2 id="data-sources">Data Sources &amp; APIs</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Data</th><th>Source</th><th>Licence / Terms</th></tr></thead>
+          <tbody>
+            <tr><td>DX Cluster spots</td><td>DX Spider network, HamQTH</td><td>Amateur radio public network</td></tr>
+            <tr><td>Space weather (SFI, Kp, SSN)</td><td>NOAA / N0NBH Solar Indices</td><td>US Government open data</td></tr>
+            <tr><td>Band conditions</td><td>N0NBH / NOAA</td><td>US Government open data</td></tr>
+            <tr><td>Solar image</td><td>NASA SDO / Helioviewer</td><td>NASA open data</td></tr>
+            <tr><td>X-ray flux</td><td>NOAA GOES satellites</td><td>US Government open data</td></tr>
+            <tr><td>POTA activations</td><td>POTA API (pota.app)</td><td>POTA public API</td></tr>
+            <tr><td>SOTA activations</td><td>SOTAwatch API</td><td>SOTA public API</td></tr>
+            <tr><td>WWFF activations</td><td>WWFF API</td><td>WWFF public API</td></tr>
+            <tr><td>Satellite TLEs</td><td>CelesTrak</td><td>Public domain</td></tr>
+            <tr><td>PSKReporter</td><td>PSKReporter MQTT / HTTP API</td><td>Philip Gladstone, free use</td></tr>
+            <tr><td>RBN spots</td><td>Reverse Beacon Network</td><td>Amateur radio public network</td></tr>
+            <tr><td>WSPR reports</td><td>WSPRnet</td><td>WSPRnet public API</td></tr>
+            <tr><td>Weather</td><td>Open-Meteo</td><td>CC BY 4.0 — free, no key</td></tr>
+            <tr><td>Aurora</td><td>NOAA OVATION model</td><td>US Government open data</td></tr>
+            <tr><td>Earthquakes</td><td>USGS Earthquake Hazards Program</td><td>US Government open data</td></tr>
+            <tr><td>Wildfires</td><td>NASA FIRMS</td><td>NASA open data</td></tr>
+            <tr><td>Propagation model</td><td>ITU-R P.533-14 / iturhfprop</td><td>ITU model, open-source implementation</td></tr>
+            <tr><td>Callsign lookup</td><td>QRZ.com XML API</td><td>QRZ account required (free)</td></tr>
+            <tr><td>Map tiles</td><td>OpenStreetMap / CARTO</td><td>ODbL / Carto ToS</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="section-divider">
+
+      <!-- ── Glossary ────────────────────────────────────── -->
+      <h2 id="glossary">Ham Radio Glossary</h2>
+      <p>Quick definitions for terms used throughout this manual.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td><strong>APRS</strong></td><td>Automatic Packet Reporting System. A digital protocol used to transmit position, weather, and text data over radio.</td></tr>
+            <tr><td><strong>AOS</strong></td><td>Acquisition of Signal — the moment a satellite rises above your horizon and becomes workable.</td></tr>
+            <tr><td><strong>Azimuth</strong></td><td>Compass bearing in degrees (0° = North, 90° = East, 180° = South, 270° = West). Used for antenna pointing.</td></tr>
+            <tr><td><strong>Band</strong></td><td>A range of radio frequencies allocated by the ITU for amateur use. e.g. "20 m band" = 14.0–14.35 MHz.</td></tr>
+            <tr><td><strong>Callsign</strong></td><td>A unique identifier assigned to a licensed amateur radio station by its national authority (e.g. W1AW, G4ABC, JA1ZZZ).</td></tr>
+            <tr><td><strong>CQ</strong></td><td>A general call inviting any station to respond. "CQ DX" specifically invites distant stations.</td></tr>
+            <tr><td><strong>CW</strong></td><td>Continuous Wave — Morse code. Still widely used for DX and contesting due to its efficiency.</td></tr>
+            <tr><td><strong>Doppler shift</strong></td><td>The change in received frequency caused by relative motion between transmitter and receiver. Significant for satellite contacts.</td></tr>
+            <tr><td><strong>DX</strong></td><td>Distant station. In HF operating, typically means a station in another country or rare entity.</td></tr>
+            <tr><td><strong>DXCC</strong></td><td>DX Century Club — the ARRL award for working 100+ countries. Also used as shorthand for "country" in the context of rare DX entities.</td></tr>
+            <tr><td><strong>EME</strong></td><td>Earth-Moon-Earth (moonbounce). Contacts made by bouncing signals off the moon's surface.</td></tr>
+            <tr><td><strong>FT8</strong></td><td>A weak-signal digital mode (Franke-Taylor design, 8-FSK) with 15-second periods. The most widely used HF mode worldwide as of 2024.</td></tr>
+            <tr><td><strong>Great-circle path</strong></td><td>The shortest distance between two points on a sphere — the actual path radio waves travel around the Earth.</td></tr>
+            <tr><td><strong>Grid square</strong></td><td>A Maidenhead Locator System cell used to describe geographic position. 4-character (e.g. IO91) or 6-character (IO91wm) resolution.</td></tr>
+            <tr><td><strong>Grey line</strong></td><td>The twilight boundary between day and night. A zone of enhanced HF propagation, especially on 80 m and 40 m.</td></tr>
+            <tr><td><strong>HF</strong></td><td>High Frequency — 3–30 MHz. The primary amateur radio spectrum for worldwide contacts via ionospheric propagation.</td></tr>
+            <tr><td><strong>Ionosphere</strong></td><td>Layers of the upper atmosphere (60–600 km) ionised by solar radiation, enabling HF radio signals to travel around the Earth.</td></tr>
+            <tr><td><strong>K-index / Kp</strong></td><td>A measure of geomagnetic disturbance (0–9). High values indicate solar storm activity that degrades HF propagation.</td></tr>
+            <tr><td><strong>LEO</strong></td><td>Low Earth Orbit — typically 200–2000 km altitude. Most amateur satellites are in LEO, with pass windows of 5–15 minutes.</td></tr>
+            <tr><td><strong>LOS</strong></td><td>Loss of Signal — the moment a satellite sets below your horizon.</td></tr>
+            <tr><td><strong>Maidenhead locator</strong></td><td>See Grid square.</td></tr>
+            <tr><td><strong>POTA</strong></td><td>Parks on the Air — an amateur radio programme where operators activate national parks and similar areas.</td></tr>
+            <tr><td><strong>Propagation</strong></td><td>How radio waves travel from transmitter to receiver. HF propagation relies on reflection from the ionosphere.</td></tr>
+            <tr><td><strong>QSO</strong></td><td>A two-way radio contact between two stations.</td></tr>
+            <tr><td><strong>RBN</strong></td><td>Reverse Beacon Network — a global network of automated CW/RTTY receivers that spot CQ calls automatically.</td></tr>
+            <tr><td><strong>SFI</strong></td><td>Solar Flux Index (F10.7) — a measure of solar radio emission and proxy for ionospheric conditions. Higher = better HF propagation.</td></tr>
+            <tr><td><strong>SGP4</strong></td><td>Simplified General Perturbations 4 — the standard orbital propagation model used to predict satellite positions from TLE data.</td></tr>
+            <tr><td><strong>SOTA</strong></td><td>Summits on the Air — an amateur radio programme where operators activate qualifying mountain summits.</td></tr>
+            <tr><td><strong>SSN</strong></td><td>Sunspot Number (Wolf Number) — a daily count of visible sunspot groups. Correlates with SFI and HF propagation quality.</td></tr>
+            <tr><td><strong>TLE</strong></td><td>Two-Line Elements — a standardised format for describing a satellite's orbital parameters, used by SGP4 to predict positions.</td></tr>
+            <tr><td><strong>VHF/UHF</strong></td><td>Very High Frequency (30–300 MHz) and Ultra High Frequency (300 MHz–3 GHz). Most amateur satellites use these bands.</td></tr>
+            <tr><td><strong>WSPR</strong></td><td>Weak Signal Propagation Reporter — a beacon mode used to map HF propagation by reporting who hears whom.</td></tr>
+            <tr><td><strong>WWFF</strong></td><td>World Wide Flora &amp; Fauna — an amateur radio programme activating nature reserves and protected areas.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="section-divider">
+
+      <!-- ── Contributing ───────────────────────────────── -->
+      <h2 id="contributing">Contributing</h2>
+      <p>
+        OpenHamClock is open-source (MIT licence) and welcomes contributions.
+        Whether you want to fix a bug, add a feature, improve a translation, or just report a problem:
+      </p>
+      <ul>
+        <li><strong>Bug reports &amp; feature requests</strong> — <a href="https://github.com/accius/openhamclock/issues" target="_blank" rel="noopener">GitHub Issues</a></li>
+        <li><strong>Code contributions</strong> — fork the repo, work on a branch, open a pull request against <code>main</code>. See <a href="https://github.com/accius/openhamclock/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">CONTRIBUTING.md</a> for guidelines.</li>
+        <li><strong>Translations</strong> — translation files live in <code>src/lang/</code>. 16 languages are currently at 100% coverage. New languages are very welcome.</li>
+        <li><strong>Documentation</strong> — this manual lives at <a href="https://github.com/accius/openhamclock-manual" target="_blank" rel="noopener">github.com/accius/openhamclock-manual</a>. Pull requests for corrections and improvements are appreciated.</li>
+      </ul>
+
+      <!-- ── Credits ────────────────────────────────────── -->
+      <h2 id="credits">Credits &amp; Licence</h2>
+      <div class="info-box">
+        <div class="info-row">
+          <span class="info-label">OpenHamClock</span>
+          Created and maintained by <strong>Chris Hetherington, K0CJH</strong>.
+          MIT Licence — free to use, modify, and self-host.
+        </div>
+        <div class="info-row">
+          <span class="info-label">Original HamClock</span>
+          <strong>Elwood Downey, WB0OEW</strong> created the original HamClock —
+          a standalone C application for Raspberry Pi that inspired this project.
+          A different program with a different codebase, but the same spirit.
+          <a href="https://www.clearskyinstitute.com/ham/HamClock/" target="_blank" rel="noopener">clearSkyInstitute.com/ham/HamClock</a>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Libraries used</span>
+          React, Vite, Express, Leaflet.js, i18next, FlexLayout-React, Helmet, MQTT.js, Axios, and many others.
+          Full list in <a href="https://github.com/accius/openhamclock/blob/main/package.json" target="_blank" rel="noopener">package.json</a>.
+        </div>
+        <div class="info-row">
+          <span class="info-label">This manual</span>
+          MIT Licence. Source at <a href="https://github.com/accius/openhamclock-manual" target="_blank" rel="noopener">github.com/accius/openhamclock-manual</a>.
+          Screenshots and diagrams are welcome contributions — see the README.
+        </div>
+      </div>
+
+      <nav class="page-nav">
+        <a href="troubleshooting.html" class="page-nav-link">
+          <span class="nav-arrow">←</span>
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Previous</span>
+            <span class="page-nav-title">Troubleshooting</span>
+          </div>
+        </a>
+        <a href="index.html" class="page-nav-link next">
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Back to start</span>
+            <span class="page-nav-title">Introduction</span>
+          </div>
+          <span class="nav-arrow">↑</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>

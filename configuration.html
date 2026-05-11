@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuration — OpenHamClock Manual</title>
+  <meta name="description" content="Complete guide to configuring OpenHamClock via the .env file, settings panel, and browser preferences.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="mobile-header"></div>
+  <div id="sidebar"></div>
+
+  <main id="main">
+    <div class="content-wrap">
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">Configuration</span>
+      </div>
+
+      <header class="page-header">
+        <div class="page-header-top">
+          <div>
+            <span class="page-number">Section 04</span>
+            <h1 class="page-title"><span class="title-icon">⚙️</span> Configuration</h1>
+          </div>
+          <span class="badge badge-config">Config</span>
+        </div>
+        <p class="page-tagline">OpenHamClock is configured through a single <code>.env</code> file on the server. This section explains every category of setting and shows you a fully annotated example.</p>
+      </header>
+
+      <!-- ── Two configuration layers ──────────────────── -->
+      <h2>Two Layers of Configuration</h2>
+      <p>
+        OpenHamClock separates <strong>server configuration</strong> (the <code>.env</code> file) from
+        <strong>display preferences</strong> (the browser Settings panel). Understanding which is which
+        saves a lot of confusion:
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Layer</th><th>Where</th><th>Controls</th><th>Requires restart?</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Server config</strong></td>
+              <td><code>.env</code> file on the server</td>
+              <td>Callsign, grid, ports, API keys, WSJT-X, security, auto-update</td>
+              <td>Yes — restart the server after changes</td>
+            </tr>
+            <tr>
+              <td><strong>Display prefs</strong></td>
+              <td>⚙️ Settings panel in the browser</td>
+              <td>Theme, layout, visible panels, map layers, units, filters</td>
+              <td>No — take effect immediately</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">Settings Sync</div>
+          <p>By default each browser saves its own display preferences independently.
+          On a self-hosted or Pi install you can set <code>SETTINGS_SYNC=true</code> in <code>.env</code>
+          to store all display preferences on the server — every browser that connects will share the same layout and filters.
+          Do <strong>not</strong> enable this on a multi-user shared instance.</p>
+        </div>
+      </div>
+
+      <!-- ── The .env file ──────────────────────────────── -->
+      <h2 id="env-file">The <code>.env</code> File</h2>
+      <p>
+        On first run the server automatically copies <code>.env.example</code> to <code>.env</code>.
+        The <code>.env</code> file is <strong>never overwritten by updates</strong> — your settings are safe
+        across upgrades.
+      </p>
+      <p>
+        Edit it with any plain-text editor:
+      </p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># On Pi / Linux / macOS</span>
+<span class="prompt">$ </span>nano ~/openhamclock/.env
+
+<span class="comment"># On Windows (PowerShell)</span>
+<span class="prompt">PS> </span>notepad openhamclock\.env</pre>
+      </div>
+      <p>Restart the server after every change to <code>.env</code>:</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># systemd (Pi / Linux)</span>
+<span class="prompt">$ </span>sudo systemctl restart openhamclock
+
+<span class="comment"># Docker</span>
+<span class="prompt">$ </span>docker compose restart
+
+<span class="comment"># Manual npm start — just Ctrl+C and npm start again</span></pre>
+      </div>
+
+      <!-- ── Station ────────────────────────────────────── -->
+      <h2 id="station">Callsign &amp; Grid Locator</h2>
+      <p>These two variables are the only ones that are truly required. Everything else has a sensible default.</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">.env</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># Your amateur radio callsign</span>
+<span class="key">CALLSIGN</span>=<span class="value">K0CJH</span>
+
+<span class="comment"># Maidenhead grid locator — 4 or 6 characters</span>
+<span class="key">LOCATOR</span>=<span class="value">DM79</span>
+
+<span class="comment"># Optional: override the coordinates derived from LOCATOR</span>
+<span class="comment"># LATITUDE=39.7392</span>
+<span class="comment"># LONGITUDE=-104.9903</span></pre>
+      </div>
+
+      <div class="info-box">
+        <div class="info-row">
+          <span class="info-label">CALLSIGN</span>
+          Used for sunrise/sunset times, DXCC entity lookups (your home country), map centering, and the DE location panel.
+          Include prefix and suffix (e.g. <code>VK2ABC</code>, <code>OE1XYZ/P</code>).
+        </div>
+        <div class="info-row">
+          <span class="info-label">LOCATOR</span>
+          4-character grids (e.g. <code>IO91</code>) give ±60 km accuracy. 6-character grids (e.g. <code>IO91wm</code>)
+          give ±3 km. The extra precision matters for satellite pass predictions and sunrise/sunset times.
+          <a href="https://www.levinecentral.com/ham/grid_square.php" target="_blank" rel="noopener">Find your grid here.</a>
+        </div>
+        <div class="info-row">
+          <span class="info-label">LATITUDE / LONGITUDE</span>
+          Optional override. If set, these take precedence over coordinates derived from LOCATOR.
+          Useful if you are right on the edge of a grid square.
+        </div>
+      </div>
+
+      <!-- ── Network ────────────────────────────────────── -->
+      <h2 id="network">Port &amp; Network Settings</h2>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">.env</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># Web UI port (default 3000 in production, 3001 in dev)</span>
+<span class="key">PORT</span>=<span class="value">3000</span>
+
+<span class="comment"># localhost = only this machine</span>
+<span class="comment"># 0.0.0.0  = accessible from any device on your network</span>
+<span class="key">HOST</span>=<span class="value">localhost</span></pre>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-body">
+          <div class="callout-title">Exposing to your network</div>
+          <p>Setting <code>HOST=0.0.0.0</code> makes OpenHamClock reachable by any device on your LAN —
+          and potentially beyond, depending on your router/firewall.
+          If you open it to the internet, also set <code>API_WRITE_KEY</code> to prevent unauthorised access
+          to write endpoints (rotator control, settings sync).</p>
+        </div>
+      </div>
+
+      <!-- ── Security ───────────────────────────────────── -->
+      <h2 id="security">Security Settings</h2>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">.env</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># Protects POST endpoints (rotator, settings sync, N3FJP QSO logging)</span>
+<span class="comment"># Required for cloud / internet-facing installs. Any random string works.</span>
+<span class="key">API_WRITE_KEY</span>=<span class="value">change-me-to-something-secret</span>
+
+<span class="comment"># Additional allowed CORS origins (comma-separated)</span>
+<span class="comment"># Only needed if you access OHC from a custom domain</span>
+<span class="comment"># CORS_ORIGINS=https://yourdomain.com</span>
+
+<span class="comment"># Trust X-Forwarded-For headers (set true behind nginx/Caddy/Railway)</span>
+<span class="key">TRUST_PROXY</span>=<span class="value">false</span></pre>
+      </div>
+
+      <!-- ── API keys ───────────────────────────────────── -->
+      <h2 id="api-keys">API Keys (Optional)</h2>
+      <p>
+        Most of OpenHamClock's data sources are free and require no key. The following optional
+        keys unlock additional features or lift rate limits:
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Service</th><th>What it unlocks</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>QRZ_USERNAME</code><br><code>QRZ_PASSWORD</code></td>
+              <td><a href="https://qrz.com" target="_blank" rel="noopener">QRZ.com</a></td>
+              <td>Callsign lookup — name, QTH, photo for DX spots. Requires a free QRZ account.</td>
+            </tr>
+            <tr>
+              <td><code>VITE_AMBIENT_APP_KEY</code><br><code>VITE_AMBIENT_API_KEY</code></td>
+              <td><a href="https://ambientweather.net" target="_blank" rel="noopener">Ambient Weather</a></td>
+              <td>Personal weather station data in the Weather panel.</td>
+            </tr>
+            <tr>
+              <td><code>WSJTX_RELAY_KEY</code></td>
+              <td>Self-generated</td>
+              <td>Authentication for the WSJT-X relay agent (cloud installs only). Any random string.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-body">
+          <div class="callout-title">Weather data needs no key</div>
+          <p>Current conditions and forecasts come from <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>,
+          which is completely free and requires no registration. The browser fetches this data directly,
+          bypassing the server entirely to avoid rate-limit issues.</p>
+        </div>
+      </div>
+
+      <!-- ── DX Cluster ─────────────────────────────────── -->
+      <h2 id="dx-cluster">DX Cluster Source</h2>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">.env</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># auto | proxy | hamqth | dxspider</span>
+<span class="key">DX_CLUSTER_SOURCE</span>=<span class="value">auto</span>
+
+<span class="comment"># How long to keep spots in the panel (minutes)</span>
+<span class="key">SPOT_RETENTION_MINUTES</span>=<span class="value">30</span>
+
+<span class="comment"># If using a self-hosted DX Spider proxy:</span>
+<span class="comment"># DXSPIDER_PROXY_URL=http://your-proxy:3002</span></pre>
+      </div>
+
+      <div class="info-box">
+        <div class="info-row"><span class="info-label">auto</span> Tries each source in priority order. Best choice for most users.</div>
+        <div class="info-row"><span class="info-label">proxy</span> Uses the bundled DX Spider telnet-to-HTTP proxy (most real-time, requires network access to a cluster node).</div>
+        <div class="info-row"><span class="info-label">hamqth</span> HamQTH cluster API — no telnet required, slightly higher latency (~30s).</div>
+        <div class="info-row"><span class="info-label">dxspider</span> Direct connection to a specific DX Spider node via the proxy URL.</div>
+      </div>
+
+      <!-- ── WSJT-X ──────────────────────────────────────── -->
+      <h2 id="wsjtx">WSJT-X UDP Integration</h2>
+      <p>
+        OpenHamClock listens for WSJT-X UDP packets on port <code>2237</code> by default — the same port
+        WSJT-X uses for its "UDP Server" feature. No relay agent is needed if WSJT-X and OpenHamClock
+        run on the same machine or LAN.
+      </p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">.env</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># Enable WSJT-X integration</span>
+<span class="key">WSJTX_ENABLED</span>=<span class="value">true</span>
+
+<span class="comment"># UDP port to listen on (must match WSJT-X Settings → Reporting → UDP Server Port)</span>
+<span class="key">WSJTX_UDP_PORT</span>=<span class="value">2237</span>
+
+<span class="comment"># For multicast setups (advanced — leave blank for most installs)</span>
+<span class="comment"># WSJTX_MULTICAST_ADDRESS=224.0.0.1</span>
+
+<span class="comment"># For cloud installs only — authentication key for the relay agent</span>
+<span class="comment"># WSJTX_RELAY_KEY=your-relay-secret</span></pre>
+      </div>
+      <p>For the full WSJT-X setup walkthrough, including the relay agent for cloud installs, see <a href="wsjt-ft8.html">WSJT-X / FT8</a>.</p>
+
+      <!-- ── Settings sync ──────────────────────────────── -->
+      <h2 id="settings-sync">Settings Sync</h2>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">.env</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># Save all display settings on the server instead of in each browser</span>
+<span class="comment"># Enable for single-operator self-hosted / Pi installs</span>
+<span class="key">SETTINGS_SYNC</span>=<span class="value">false</span>
+
+<span class="comment"># Optional: custom path for the settings file</span>
+<span class="comment"># SETTINGS_FILE=/path/to/settings.json</span></pre>
+      </div>
+      <p>
+        With <code>SETTINGS_SYNC=true</code>, your layout, visible panels, map layers, theme, and all filters
+        are stored in <code>data/settings.json</code> on the server. Any browser that connects picks up the
+        same configuration automatically — useful when you access your Pi from multiple devices.
+      </p>
+
+      <!-- ── Display defaults ───────────────────────────── -->
+      <h2 id="display">Display Defaults</h2>
+      <p>These set the initial values loaded by new browsers. Users can always override them in the Settings panel.</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">.env</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># Theme: dark | light | legacy | retro | custom</span>
+<span class="key">THEME</span>=<span class="value">dark</span>
+
+<span class="comment"># Layout: modern | classic | dockable | tablet | compact | emcomm</span>
+<span class="key">LAYOUT</span>=<span class="value">modern</span>
+
+<span class="comment"># Units: imperial | metric</span>
+<span class="key">DISTUNITS</span>=<span class="value">imperial</span>
+<span class="key">TEMPUNITS</span>=<span class="value">imperial</span>
+
+<span class="comment"># Clock format: 12 | 24</span>
+<span class="key">TIME_FORMAT</span>=<span class="value">24</span></pre>
+      </div>
+
+      <!-- ── Auto-update ────────────────────────────────── -->
+      <h2 id="auto-update">Auto-Update</h2>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">.env</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># Check for updates automatically (requires git clone install)</span>
+<span class="key">AUTO_UPDATE_ENABLED</span>=<span class="value">false</span>
+
+<span class="comment"># How often to check (minutes)</span>
+<span class="key">AUTO_UPDATE_INTERVAL_MINUTES</span>=<span class="value">60</span>
+
+<span class="comment"># Run a check shortly after startup</span>
+<span class="key">AUTO_UPDATE_ON_START</span>=<span class="value">false</span>
+
+<span class="comment"># Exit after updating so systemd/pm2 restarts the service</span>
+<span class="key">AUTO_UPDATE_EXIT_AFTER</span>=<span class="value">true</span></pre>
+      </div>
+
+      <!-- ── Full annotated example ─────────────────────── -->
+      <h2 id="full-example">Annotated <code>.env</code> Example</h2>
+      <p>A typical configuration for a Raspberry Pi shack display with WSJT-X and rig control:</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">.env — Pi shack example</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># ── Station ─────────────────────────────</span>
+<span class="key">CALLSIGN</span>=<span class="value">K0CJH</span>
+<span class="key">LOCATOR</span>=<span class="value">DM79ol</span>
+
+<span class="comment"># ── Server ──────────────────────────────</span>
+<span class="key">PORT</span>=<span class="value">3000</span>
+<span class="key">HOST</span>=<span class="value">0.0.0.0</span>          <span class="comment"># accessible from tablets on the LAN</span>
+
+<span class="comment"># ── Display ─────────────────────────────</span>
+<span class="key">THEME</span>=<span class="value">dark</span>
+<span class="key">LAYOUT</span>=<span class="value">modern</span>
+<span class="key">DISTUNITS</span>=<span class="value">imperial</span>
+<span class="key">TEMPUNITS</span>=<span class="value">imperial</span>
+<span class="key">TIME_FORMAT</span>=<span class="value">24</span>
+
+<span class="comment"># ── Settings sync (single-operator Pi) ──</span>
+<span class="key">SETTINGS_SYNC</span>=<span class="value">true</span>
+
+<span class="comment"># ── WSJT-X ──────────────────────────────</span>
+<span class="key">WSJTX_ENABLED</span>=<span class="value">true</span>
+<span class="key">WSJTX_UDP_PORT</span>=<span class="value">2237</span>
+
+<span class="comment"># ── QRZ callsign lookups ─────────────────</span>
+<span class="key">QRZ_USERNAME</span>=<span class="value">K0CJH</span>
+<span class="key">QRZ_PASSWORD</span>=<span class="value">my-qrz-password</span>
+
+<span class="comment"># ── Auto-update ──────────────────────────</span>
+<span class="key">AUTO_UPDATE_ENABLED</span>=<span class="value">true</span>
+<span class="key">AUTO_UPDATE_INTERVAL_MINUTES</span>=<span class="value">60</span>
+<span class="key">AUTO_UPDATE_EXIT_AFTER</span>=<span class="value">true</span></pre>
+      </div>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-body">
+          <div class="callout-title">Full variable reference</div>
+          <p>The complete list of every <code>.env</code> variable with defaults and valid values
+          is in the <a href="reference.html#env-vars">Reference section</a>.</p>
+        </div>
+      </div>
+
+      <nav class="page-nav">
+        <a href="installation.html" class="page-nav-link">
+          <span class="nav-arrow">←</span>
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Previous</span>
+            <span class="page-nav-title">Installation</span>
+          </div>
+        </a>
+        <a href="world-map.html" class="page-nav-link next">
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Next</span>
+            <span class="page-nav-title">World Map</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Troubleshooting — OpenHamClock Manual</title>
+  <meta name="description" content="Fixing common OpenHamClock problems: service won't start, no DX spots, WSJT-X not connecting, slow Pi, and how to read the logs.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="mobile-header"></div>
+  <div id="sidebar"></div>
+
+  <main id="main">
+    <div class="content-wrap">
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">Troubleshooting</span>
+      </div>
+
+      <header class="page-header">
+        <div class="page-header-top">
+          <div>
+            <span class="page-number">Section 13</span>
+            <h1 class="page-title"><span class="title-icon">🔧</span> Troubleshooting</h1>
+          </div>
+          <span class="badge badge-advanced">Advanced</span>
+        </div>
+        <p class="page-tagline">Symptom → cause → fix. Work through these in order. If none of these solve it, the logs and health endpoint will tell you what is actually wrong.</p>
+      </header>
+
+      <!-- ── Logs first ─────────────────────────────────── -->
+      <h2 id="logs">Read the Logs First</h2>
+      <p>
+        Before diving into specific symptoms, check the server logs. Most problems announce
+        themselves clearly in plain text.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash — systemd (Pi / Linux)</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># Live log tail</span>
+<span class="prompt">$ </span>sudo journalctl -u openhamclock -f
+
+<span class="comment"># Last 100 lines</span>
+<span class="prompt">$ </span>sudo journalctl -u openhamclock -n 100 --no-pager</pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash — Docker</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="prompt">$ </span>docker compose logs -f openhamclock</pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash — manual npm start</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># Logs print directly to the terminal — scroll up or pipe to a file:</span>
+<span class="prompt">$ </span>npm start 2>&1 | tee openhamclock.log</pre>
+      </div>
+
+      <p>Also check the <strong>health endpoint</strong> — it reports API status, connected users, and upstream service health:</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="prompt">$ </span>curl http://localhost:3000/api/health | python3 -m json.tool</pre>
+      </div>
+
+      <hr class="section-divider">
+
+      <!-- ── Service won't start ────────────────────────── -->
+      <h2 id="wont-start">Service Won't Start</h2>
+
+      <h3>Symptom: <code>npm start</code> exits immediately or with an error</h3>
+      <h4>Port already in use</h4>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">Error message</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="output">Error: listen EADDRINUSE: address already in use :::3000</span></pre>
+      </div>
+      <p><strong>Cause:</strong> Something else is already listening on port 3000 (or 3001 in dev mode).</p>
+      <p><strong>Fix:</strong> Find and stop the conflicting process, or change OpenHamClock's port:</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># Find what is on port 3000</span>
+<span class="prompt">$ </span>lsof -i :3000        <span class="comment"># macOS / Linux</span>
+<span class="prompt">$ </span>netstat -ano | findstr :3000   <span class="comment"># Windows</span>
+
+<span class="comment"># Or change the port in .env</span>
+<span class="key">PORT</span>=<span class="value">8080</span></pre>
+      </div>
+
+      <h4>Node.js version too old</h4>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">Error message</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="output">SyntaxError: Unexpected token '?'</span>
+<span class="output">  or: Cannot use import statement</span></pre>
+      </div>
+      <p><strong>Cause:</strong> Node.js version is below 20. OpenHamClock requires Node.js 20 or later.</p>
+      <p><strong>Fix:</strong></p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="prompt">$ </span>node --version    <span class="comment"># must show v20.x.x or higher</span>
+
+<span class="comment"># Install Node.js 22 LTS via nvm (Linux/macOS/Pi)</span>
+<span class="prompt">$ </span>curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+<span class="prompt">$ </span>nvm install 22 && nvm use 22</pre>
+      </div>
+
+      <h4>Missing .env file</h4>
+      <p><strong>Cause:</strong> <code>.env</code> was deleted or never created.</p>
+      <p><strong>Fix:</strong> Copy the example back and set your callsign:</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="prompt">$ </span>cp .env.example .env
+<span class="prompt">$ </span>nano .env    <span class="comment"># set CALLSIGN and LOCATOR</span></pre>
+      </div>
+
+      <hr class="section-divider">
+
+      <!-- ── Map not loading ────────────────────────────── -->
+      <h2 id="map-not-loading">Map Not Loading</h2>
+
+      <h3>Symptom: Grey or blank area where the map should be</h3>
+      <p><strong>Cause A:</strong> Browser cannot reach the map tile server (OpenStreetMap CDN).
+      This happens on restricted networks (e.g. corporate firewalls, some hotel Wi-Fi).</p>
+      <p><strong>Fix:</strong> Switch to a different base map tile source in Settings → Map → Base Map,
+      or check if your network blocks external CDNs.</p>
+
+      <p><strong>Cause B:</strong> JavaScript error in the browser.</p>
+      <p><strong>Fix:</strong> Open your browser's developer tools (F12), go to the Console tab,
+      and look for red errors. Copy the error text and search the
+      <a href="https://github.com/accius/openhamclock/issues" target="_blank" rel="noopener">GitHub Issues</a>.</p>
+
+      <hr class="section-divider">
+
+      <!-- ── No DX spots ────────────────────────────────── -->
+      <h2 id="no-spots">No DX Spots Appearing</h2>
+
+      <h3>Symptom: DX Cluster panel is empty or shows "No spots"</h3>
+
+      <p><strong>Cause A:</strong> DX cluster source is unreachable.</p>
+      <p><strong>Fix:</strong> Check the health endpoint for cluster status. Try switching
+      <code>DX_CLUSTER_SOURCE</code> in <code>.env</code> to <code>hamqth</code> as a fallback:</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">.env</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="key">DX_CLUSTER_SOURCE</span>=<span class="value">hamqth</span></pre>
+      </div>
+
+      <p><strong>Cause B:</strong> Filters are hiding all spots.</p>
+      <p><strong>Fix:</strong> In the DX Cluster panel toolbar, click <strong>ALL</strong> to reset
+      all band and mode filters. Check that the continent and zone filters are not excluding everything.</p>
+
+      <p><strong>Cause C:</strong> Spot retention window is set too short.</p>
+      <p><strong>Fix:</strong> If <code>SPOT_RETENTION_MINUTES</code> is set to a very low value (e.g. 1),
+      spots expire before you see them. Set it to at least <code>15</code>.</p>
+
+      <hr class="section-divider">
+
+      <!-- ── WSJT-X not connecting ──────────────────────── -->
+      <h2 id="wsjtx-not-connecting">WSJT-X Not Connecting</h2>
+
+      <h3>Symptom: WSJT-X panel shows no decodes, or "Waiting for data…"</h3>
+
+      <p><strong>Cause A:</strong> WSJT-X UDP Server is not enabled or is pointed at the wrong address.</p>
+      <p><strong>Fix:</strong> In WSJT-X: File → Settings → Reporting. Verify:</p>
+      <ul>
+        <li>UDP Server checkbox is <strong>ticked</strong></li>
+        <li>Hostname matches OpenHamClock's machine IP (or <code>127.0.0.1</code> for same machine)</li>
+        <li>Port is <code>2237</code> (or matches <code>WSJTX_UDP_PORT</code> in <code>.env</code>)</li>
+      </ul>
+
+      <p><strong>Cause B:</strong> Firewall is blocking UDP port 2237.</p>
+      <p><strong>Fix:</strong></p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash — Linux firewall</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="prompt">$ </span>sudo ufw allow 2237/udp</pre>
+      </div>
+      <p>On Windows, check Windows Defender Firewall → Inbound Rules for a rule blocking UDP 2237.</p>
+
+      <p><strong>Cause C:</strong> <code>WSJTX_ENABLED</code> is not set to <code>true</code> in <code>.env</code>.</p>
+      <p><strong>Fix:</strong> Add <code>WSJTX_ENABLED=true</code> to <code>.env</code> and restart.</p>
+
+      <hr class="section-divider">
+
+      <!-- ── Rig Bridge issues ──────────────────────────── -->
+      <h2 id="rig-bridge">Rig Bridge Issues</h2>
+
+      <h3>Symptom: Rig Control panel shows "Disconnected" or no frequency</h3>
+
+      <p><strong>Cause A:</strong> Wrong serial port or baud rate.</p>
+      <p><strong>Fix:</strong> Double-check the port name and baud rate in your <code>.env</code> or
+      rig-listener arguments. The correct baud rate is in your radio's CAT/CI-V menu — common
+      values are 4800, 9600, 19200, 38400. Icom CI-V defaults to 9600.</p>
+
+      <p><strong>Cause B (Linux):</strong> Permission denied on serial port.</p>
+      <p><strong>Fix:</strong></p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="prompt">$ </span>sudo usermod -aG dialout $USER
+<span class="comment"># Log out and back in for the group change to take effect</span></pre>
+      </div>
+
+      <p><strong>Cause C:</strong> Icom CI-V address mismatch.</p>
+      <p><strong>Fix:</strong> Check the CI-V address in your Icom radio's menu (usually under
+      "Connectors" or "CI-V"). Common addresses: IC-7300 = <code>0x94</code>, IC-705 = <code>0xA4</code>,
+      IC-9700 = <code>0xA2</code>. Set <code>RIG_CI_V_ADDRESS</code> in <code>.env</code> to match.</p>
+
+      <hr class="section-divider">
+
+      <!-- ── Slow Pi ─────────────────────────────────────── -->
+      <h2 id="slow-pi">Slow Pi Performance</h2>
+
+      <h3>Symptom: Dashboard is sluggish, panels take a long time to update</h3>
+
+      <p><strong>Cause A:</strong> CPU throttling due to heat.</p>
+      <p><strong>Fix:</strong> Check CPU temperature and throttle status:</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="prompt">$ </span>vcgencmd measure_temp
+<span class="prompt">$ </span>vcgencmd get_throttled   <span class="comment"># 0x0 = no throttling; anything else = throttled</span></pre>
+      </div>
+      <p>If throttled: add a heatsink or active cooling. Pi 4 and 5 run warm under load
+      — a small fan makes a significant difference.</p>
+
+      <p><strong>Cause B:</strong> Too many browser panels open on a Pi 3B+.</p>
+      <p><strong>Fix:</strong> Reduce the number of active panels in Settings → Panels.
+      Disable panels you do not use (DXpeditions, Contests, WWBOTA, etc.)
+      The Pi 3B+ has limited RAM — fewer active panels = faster rendering.</p>
+
+      <p><strong>Cause C:</strong> SD card is slow.</p>
+      <p><strong>Fix:</strong> Use a Class 10 / A1-rated microSD card, or better yet move the OS
+      to a USB SSD. SD card I/O speed is the most common Pi bottleneck for Node.js apps.</p>
+
+      <hr class="section-divider">
+
+      <!-- ── Getting more help ──────────────────────────── -->
+      <h2 id="help">Getting More Help</h2>
+      <p>
+        If none of the above fixes your problem, the following resources are available:
+      </p>
+      <div class="info-box">
+        <div class="info-row">
+          <span class="info-label">GitHub Issues</span>
+          <a href="https://github.com/accius/openhamclock/issues" target="_blank" rel="noopener">github.com/accius/openhamclock/issues</a> —
+          Search existing issues first. When opening a new issue, include your OS, Node.js version,
+          browser, and the relevant section of your server log.
+        </div>
+        <div class="info-row">
+          <span class="info-label">Health endpoint</span>
+          <code>http://your-instance:3000/api/health</code> — returns a JSON object with
+          server version, uptime, connected users, and the status of every upstream data source.
+          Paste this into your issue report.
+        </div>
+        <div class="info-row">
+          <span class="info-label">Browser console</span>
+          Press <kbd>F12</kbd> in your browser → Console tab. Red errors here indicate
+          frontend JavaScript problems. Include the full error text in your report.
+        </div>
+      </div>
+
+      <nav class="page-nav">
+        <a href="themes-profiles.html" class="page-nav-link">
+          <span class="nav-arrow">←</span>
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Previous</span>
+            <span class="page-nav-title">Themes &amp; Profiles</span>
+          </div>
+        </a>
+        <a href="reference.html" class="page-nav-link next">
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Next</span>
+            <span class="page-nav-title">Reference</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>

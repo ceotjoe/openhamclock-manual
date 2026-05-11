@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Themes &amp; Profiles — OpenHamClock Manual</title>
+  <meta name="description" content="Customising OpenHamClock with themes, layouts, and named profiles for different operating scenarios.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="mobile-header"></div>
+  <div id="sidebar"></div>
+
+  <main id="main">
+    <div class="content-wrap">
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">Themes &amp; Profiles</span>
+      </div>
+
+      <header class="page-header">
+        <div class="page-header-top">
+          <div>
+            <span class="page-number">Section 12</span>
+            <h1 class="page-title"><span class="title-icon">🎨</span> Themes &amp; Profiles</h1>
+          </div>
+          <span class="badge badge-advanced">Advanced</span>
+        </div>
+        <p class="page-tagline">Five built-in themes, six layouts, and named profiles let you tailor OpenHamClock for any operating scenario — from a contest weekend to an EmComm deployment.</p>
+      </header>
+
+      <!-- ── Themes ─────────────────────────────────────── -->
+      <h2>Themes</h2>
+      <p>
+        A theme controls the overall colour palette and visual style of the dashboard.
+        Switch themes at any time from <strong>Settings → Appearance → Theme</strong> —
+        the change takes effect immediately with no restart needed.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Theme</th><th>Description</th><th>Best for</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Dark</strong></td>
+              <td>Deep navy background with blue and cyan accents. The default. Clean and modern.</td>
+              <td>Most shack conditions. Easy on the eyes in a dim room.</td>
+            </tr>
+            <tr>
+              <td><strong>Light</strong></td>
+              <td>White/grey background with blue accents. Standard web-app feel.</td>
+              <td>Bright rooms, outdoor use, laptop screens in daylight.</td>
+            </tr>
+            <tr>
+              <td><strong>Legacy</strong></td>
+              <td>Green text on a pure black background — classic terminal/phosphor look.</td>
+              <td>Operators who grew up with DOS and VT100 terminals. Maximum nostalgia.</td>
+            </tr>
+            <tr>
+              <td><strong>Retro</strong></td>
+              <td>Windows 3.1 / early 90s aesthetic with bevelled panels and system colours.</td>
+              <td>Shack humour. Surprisingly readable. Great conversation starter.</td>
+            </tr>
+            <tr>
+              <td><strong>Custom</strong></td>
+              <td>You control every colour via CSS custom properties.</td>
+              <td>Club stations with a house colour scheme; personal branding; accessibility needs.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="figure">
+        <div class="figure-placeholder">
+          <span class="placeholder-icon">🎨</span>
+          <span class="placeholder-label">Screenshot: Theme switcher showing all five themes</span>
+          <span style="font-size:0.75rem;opacity:0.5;">assets/img/screenshots/themes.png</span>
+        </div>
+        <div class="figure-caption">
+          All five built-in themes side by side: Dark, Light, Legacy, Retro, and Custom.
+          The theme selector lives in Settings → Appearance.
+        </div>
+      </div>
+
+      <h3>Creating a custom theme</h3>
+      <p>
+        Select <strong>Custom</strong> as your theme, then open
+        <strong>Settings → Appearance → Edit Custom CSS</strong>.
+        You can override any CSS custom property. A minimal example that changes the
+        primary accent colour to a club's house amber:
+      </p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">Custom CSS</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre>:root {
+  --sidebar-active: <span class="value">#f59e0b</span>;          <span class="comment">/* amber active nav link */</span>
+  --sidebar-active-bg: <span class="value">#292118</span>;       <span class="comment">/* dark amber sidebar highlight */</span>
+  --link: <span class="value">#f59e0b</span>;                      <span class="comment">/* amber links */</span>
+  --badge-feature: <span class="value">#b45309</span>;            <span class="comment">/* darker amber badges */</span>
+}</pre>
+      </div>
+      <p>
+        Changes apply live as you type. All CSS custom properties are documented in the
+        <a href="reference.html#css-vars">Reference section</a>.
+      </p>
+
+      <!-- ── Layouts ────────────────────────────────────── -->
+      <h2>Layouts</h2>
+      <p>
+        A layout determines how panels are arranged on screen. Switch layouts from
+        <strong>Settings → Appearance → Layout</strong>.
+      </p>
+
+      <div class="info-box">
+        <div class="info-row">
+          <span class="info-label">Modern</span>
+          Three-column grid: left sidebar for DX Cluster and propagation data, large map in the centre,
+          right sidebar for POTA/SOTA, space weather, and rig info.
+          Optimised for widescreen monitors (1920px+). The recommended default.
+        </div>
+        <div class="info-row">
+          <span class="info-label">Classic</span>
+          Inspired by the original WB0OEW HamClock. Black background, large coloured numeric
+          displays for SFI/K/SSN, full-width map. Purist and readable from a distance.
+        </div>
+        <div class="info-row">
+          <span class="info-label">Dockable</span>
+          A windowed, drag-and-drop interface. Every panel is a floating window that can be
+          moved, resized, docked to any edge, or tabbed with other panels.
+          Maximum flexibility for power users with large or multi-monitor setups.
+        </div>
+        <div class="info-row">
+          <span class="info-label">Tablet</span>
+          Optimised for 10–13" touchscreens. Larger tap targets, simplified navigation,
+          single-column panel stacking below the map.
+        </div>
+        <div class="info-row">
+          <span class="info-label">Compact</span>
+          Minimal UI for smaller screens and mobile phones. Essential panels only,
+          no sidebars.
+        </div>
+        <div class="info-row">
+          <span class="info-label">EmComm</span>
+          Emergency Communications layout. Full-screen map with APRS station positions,
+          NWS weather alerts, FEMA shelter locations, and a net check-in roster.
+          Designed for served agency activations and public service events.
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">Dockable layout for multi-monitor shacks</div>
+          <p>If you run two monitors, the Dockable layout lets you spread panels across
+          both screens. Tear the WSJT-X decode panel out to your secondary monitor,
+          keep the map and DX Cluster on your primary. OpenHamClock remembers the
+          layout of every panel between sessions.</p>
+        </div>
+      </div>
+
+      <!-- ── Panels ─────────────────────────────────────── -->
+      <h2>Showing and Hiding Panels</h2>
+      <p>
+        Within any layout, individual panels can be toggled on or off.
+        Open <strong>Settings → Panels</strong> for a complete checklist of every available panel.
+        Panels you never use can be hidden to reduce visual clutter.
+      </p>
+      <p>
+        In the <strong>Dockable layout</strong>, hidden panels can be restored at any time from the
+        Panels menu without resetting your entire layout.
+      </p>
+
+      <!-- ── Profiles ───────────────────────────────────── -->
+      <h2>Profiles</h2>
+      <p>
+        A <strong>profile</strong> is a named snapshot of your entire dashboard configuration:
+        layout, theme, visible panels, map layers, filters, unit preferences — everything.
+        Switching profiles instantly restores a saved configuration, making it trivial to
+        switch between very different operating modes.
+      </p>
+
+      <h3>Creating a profile</h3>
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Configure the dashboard exactly as you want it</div>
+            <p>Set the layout, theme, visible panels, DX Cluster filters, map layers, and any other settings.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Open Settings → Profiles → Save Current as Profile</div>
+            <p>Enter a name for the profile (e.g. "Contest Weekend", "POTA Hunting", "EmComm Event").</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Switch profiles any time</div>
+            <p>Open Settings → Profiles and click the profile name to load it instantly.
+            Your previous configuration is automatically saved as "Last used" so you can switch back.</p>
+          </div>
+        </li>
+      </ol>
+
+      <h3>Profile use cases</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Profile name</th><th>Layout</th><th>Theme</th><th>What's enabled</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Daily DX</strong></td>
+              <td>Modern</td>
+              <td>Dark</td>
+              <td>DX Cluster, World Map, Space Weather, POTA, PSKReporter</td>
+            </tr>
+            <tr>
+              <td><strong>Contest Weekend</strong></td>
+              <td>Modern</td>
+              <td>Dark</td>
+              <td>DX Cluster (single band), Band Conditions, Contests panel, Rig Control</td>
+            </tr>
+            <tr>
+              <td><strong>POTA Activating</strong></td>
+              <td>Compact</td>
+              <td>Light</td>
+              <td>POTA panel, WSJT-X (FT8), World Map, Rig Control</td>
+            </tr>
+            <tr>
+              <td><strong>EmComm Event</strong></td>
+              <td>EmComm</td>
+              <td>Dark</td>
+              <td>APRS tracking, NWS Alerts, FEMA Shelters, Net roster, Weather</td>
+            </tr>
+            <tr>
+              <td><strong>Satellite Operating</strong></td>
+              <td>Modern</td>
+              <td>Dark</td>
+              <td>Satellites panel, World Map (with satellite layer), Rig Control (with Doppler)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── Sharing profiles ───────────────────────────── -->
+      <h2>Sharing Profiles</h2>
+      <p>
+        Profiles are stored as JSON in your browser's localStorage (or in <code>data/settings.json</code>
+        if Settings Sync is enabled). To share a profile with a club member or another device:
+      </p>
+      <ol>
+        <li>Open <strong>Settings → Profiles → Export</strong> to download a <code>.json</code> file.</li>
+        <li>Send it to the other operator.</li>
+        <li>They open <strong>Settings → Profiles → Import</strong> and select the file.</li>
+      </ol>
+      <p>
+        This is useful for club stations where multiple operators share the same Pi or server —
+        each member can import their preferred profile and switch to it when they sit down at the radio.
+      </p>
+
+      <nav class="page-nav">
+        <a href="wsjt-ft8.html" class="page-nav-link">
+          <span class="nav-arrow">←</span>
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Previous</span>
+            <span class="page-nav-title">WSJT-X / FT8</span>
+          </div>
+        </a>
+        <a href="troubleshooting.html" class="page-nav-link next">
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Next</span>
+            <span class="page-nav-title">Troubleshooting</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rig Bridge — OpenHamClock Manual</title>
+  <meta name="description" content="Connecting your radio to OpenHamClock with Rig Bridge: click any spot to tune automatically. Setup for Yaesu, Icom, Kenwood, Elecraft, and SDR.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="mobile-header"></div>
+  <div id="sidebar"></div>
+
+  <main id="main">
+    <div class="content-wrap">
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">Rig Bridge</span>
+      </div>
+
+      <header class="page-header">
+        <div class="page-header-top">
+          <div>
+            <span class="page-number">Section 10</span>
+            <h1 class="page-title"><span class="title-icon">🎛️</span> Rig Bridge</h1>
+          </div>
+          <span class="badge badge-feature">Feature</span>
+        </div>
+        <p class="page-tagline">Click any DX spot, POTA activator, or satellite frequency and your radio tunes there instantly. Rig Bridge connects OpenHamClock to your transceiver over USB serial, CI-V, or network.</p>
+      </header>
+
+      <!-- ── What Rig Bridge does ────────────────────────── -->
+      <h2>What Rig Bridge Does</h2>
+      <p>
+        Rig Bridge is OpenHamClock's rig control layer. Once connected, every frequency
+        shown in the dashboard becomes a clickable link to your radio. Click a DX spot on
+        14.025 MHz CW and your transceiver jumps there in CW mode — without you touching
+        the VFO. Click a POTA activator on 7.225 MHz SSB and the radio switches to 40 m LSB.
+        Click a WSJT-X spot and the radio moves to the FT8 dial frequency in USB.
+      </p>
+      <p>
+        The Rig Control panel also shows your radio's <strong>current frequency, mode, and VFO</strong>
+        in real time — a permanent readout visible from across the shack, even on a wall-mounted display.
+      </p>
+
+      <!-- ── Supported radios ───────────────────────────── -->
+      <h2>Supported Radios</h2>
+      <p>
+        Rig Bridge includes <strong>22 radio plugins</strong> covering all major brands.
+        If your radio supports any of these interfaces, it will work:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Protocol</th><th>Supported radios (examples)</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Yaesu CAT</strong></td>
+              <td>FT-991A, FT-710, FT-DX10, FT-DX101, FT-DX3000, FT-817/818, FT-857, FT-897, FT-450, FT-2000, FT-5000 and more</td>
+            </tr>
+            <tr>
+              <td><strong>Icom CI-V</strong></td>
+              <td>IC-7300, IC-7610, IC-7700, IC-7800, IC-9700, IC-705, IC-7100, IC-7200, IC-7410, IC-746, IC-756, IC-7000 and more</td>
+            </tr>
+            <tr>
+              <td><strong>Kenwood</strong></td>
+              <td>TS-890S, TS-590SG, TS-590S, TS-570, TS-2000, TH-D74 and more</td>
+            </tr>
+            <tr>
+              <td><strong>Elecraft</strong></td>
+              <td>K4, K3, K3S, KX3, KX2</td>
+            </tr>
+            <tr>
+              <td><strong>TCI (network)</strong></td>
+              <td>Expert Electronics ExpertSDR2, Afedri SDR, any TCI-compatible SDR receiver</td>
+            </tr>
+            <tr>
+              <td><strong>FlexRadio SmartSDR</strong></td>
+              <td>FLEX-6300, FLEX-6400, FLEX-6500, FLEX-6600, FLEX-6700</td>
+            </tr>
+            <tr>
+              <td><strong>Hamlib (generic)</strong></td>
+              <td>Hundreds of radios via the Hamlib rigctld daemon</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-body">
+          <div class="callout-title">Not sure which protocol your radio uses?</div>
+          <p>Check your radio's manual under "PC Control" or "CAT System". Yaesu radios use CAT
+          (often via a USB cable that enumerates as a COM/tty port). Icom radios use CI-V
+          (via USB or a dedicated CI-V interface). Kenwood uses a simple ASCII protocol.
+          Most modern radios present as a USB serial device — no extra interface needed.</p>
+        </div>
+      </div>
+
+      <!-- ── Setup options ──────────────────────────────── -->
+      <h2>Setup: Choosing Your Connection Method</h2>
+      <p>There are two ways to connect your radio to OpenHamClock:</p>
+
+      <div class="two-col">
+        <div>
+          <h3>Option A — rig-listener (recommended)</h3>
+          <p>
+            A small standalone executable that runs on <em>any</em> Windows, macOS, or Linux computer
+            connected to your radio. It handles the serial connection and exposes a simple HTTP API
+            that OpenHamClock calls over the network.
+          </p>
+          <p><strong>Best for:</strong> any setup. No Node.js required on the radio PC.
+          Works when OpenHamClock is on a different machine (Pi, cloud, etc.) than the radio.</p>
+        </div>
+        <div>
+          <h3>Option B — direct from server</h3>
+          <p>
+            OpenHamClock's Node.js server connects to the radio's serial port directly.
+            Simpler, but requires OpenHamClock to be running on the same machine as the radio.
+          </p>
+          <p><strong>Best for:</strong> single-machine setups where OpenHamClock and your radio
+          are both connected to the same computer.</p>
+        </div>
+      </div>
+
+      <!-- ── rig-listener setup ─────────────────────────── -->
+      <h2 id="rig-listener">Setting Up rig-listener (Option A)</h2>
+
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Download rig-listener</div>
+            <p>Go to the <a href="https://github.com/accius/openhamclock/releases" target="_blank" rel="noopener">OpenHamClock releases page</a>
+            and download the latest <code>rig-listener</code> binary for your OS:
+            <code>rig-listener-win.exe</code>, <code>rig-listener-macos</code>, or <code>rig-listener-linux</code>.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Connect your radio via USB and find the serial port</div>
+            <p>On <strong>Windows</strong>: open Device Manager → Ports (COM &amp; LPT). Note the COM number (e.g. <code>COM4</code>).<br>
+            On <strong>macOS</strong>: run <code>ls /dev/tty.usbserial*</code> or <code>ls /dev/cu.*</code>.<br>
+            On <strong>Linux</strong>: run <code>ls /dev/ttyUSB*</code> or <code>ls /dev/ttyACM*</code>.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Run rig-listener with your radio's parameters</div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">bash — Icom IC-7300 example</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">$ </span>./rig-listener --port /dev/ttyUSB0 --baud 9600 --rig icom-ci-v --ci-v-address 0x94</pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">bash — Yaesu FT-991A example</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">$ </span>./rig-listener --port COM4 --baud 38400 --rig yaesu-cat</pre>
+            </div>
+            <p>rig-listener starts an HTTP server on port <code>3005</code> by default.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Point OpenHamClock at rig-listener</div>
+            <p>In the OpenHamClock Settings panel, open <strong>Rig Control</strong> and set the URL to:</p>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">Settings → Rig Control → URL</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre>http://localhost:3005      <span class="comment"># if rig-listener is on the same machine</span>
+http://192.168.1.50:3005   <span class="comment"># if rig-listener is on a different machine</span></pre>
+            </div>
+            <p>Click <strong>Test Connection</strong>. The Rig Control panel should show your radio's current frequency.</p>
+          </div>
+        </li>
+      </ol>
+
+      <!-- ── Direct server setup ────────────────────────── -->
+      <h2 id="direct">Direct Server Setup (Option B)</h2>
+      <p>Add these variables to your <code>.env</code> and restart the server:</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">.env</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="key">RIG_ENABLED</span>=<span class="value">true</span>
+<span class="key">RIG_TYPE</span>=<span class="value">icom-ci-v</span>           <span class="comment"># see table below for options</span>
+<span class="key">RIG_SERIAL_PORT</span>=<span class="value">/dev/ttyUSB0</span>  <span class="comment"># COM4 on Windows</span>
+<span class="key">RIG_BAUD_RATE</span>=<span class="value">9600</span>
+<span class="key">RIG_CI_V_ADDRESS</span>=<span class="value">0x94</span>         <span class="comment"># Icom only — check your radio's manual</span></pre>
+      </div>
+
+      <h3>RIG_TYPE values</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>RIG_TYPE value</th><th>Protocol</th><th>Common radios</th></tr></thead>
+          <tbody>
+            <tr><td><code>yaesu-cat</code></td><td>Yaesu CAT</td><td>FT-991A, FT-710, FT-DX10, FT-817/818</td></tr>
+            <tr><td><code>icom-ci-v</code></td><td>Icom CI-V</td><td>IC-7300, IC-7610, IC-705, IC-9700</td></tr>
+            <tr><td><code>kenwood</code></td><td>Kenwood ASCII</td><td>TS-890S, TS-590SG, TS-2000</td></tr>
+            <tr><td><code>elecraft</code></td><td>Elecraft KIO3</td><td>K4, K3, K3S, KX3, KX2</td></tr>
+            <tr><td><code>tci</code></td><td>TCI WebSocket</td><td>Expert SDR, Afedri SDR</td></tr>
+            <tr><td><code>hamlib</code></td><td>Hamlib rigctld</td><td>Any Hamlib-supported radio</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── Rotator control ────────────────────────────── -->
+      <h2>Rotator Control</h2>
+      <p>
+        OpenHamClock also supports <strong>antenna rotator control</strong>. When a DX spot or
+        activator is selected, the bearing to that station is computed from your grid square and
+        displayed in the Rotator panel. If a rotator controller is connected, clicking
+        <strong>Rotate</strong> sends the azimuth command automatically.
+      </p>
+      <p>
+        A bearing line from your QTH to the DX station is drawn on the world map,
+        giving you a visual confirmation that your beam is pointed in the right direction.
+      </p>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">No rotator? Still useful.</div>
+          <p>Even without a connected rotator, the bearing readout and map line are valuable.
+          If you have a fixed yagi or manually-rotated beam, the azimuth shown in OpenHamClock
+          tells you exactly where to turn it before you call. No separate bearing calculator needed.</p>
+        </div>
+      </div>
+
+      <!-- ── The Rig Control panel ──────────────────────── -->
+      <h2>The Rig Control Panel</h2>
+      <p>
+        Once connected, the Rig Control panel shows a live readout of your radio's state:
+      </p>
+      <div class="info-box">
+        <div class="info-row"><span class="info-label">Frequency</span> Current VFO frequency, large and readable from across the shack.</div>
+        <div class="info-row"><span class="info-label">Mode</span> Current operating mode: CW, USB, LSB, FT8, RTTY, AM, FM.</div>
+        <div class="info-row"><span class="info-label">VFO</span> VFO A or VFO B indicator.</div>
+        <div class="info-row"><span class="info-label">PTT state</span> Transmitting / receiving indicator. Updates in real time.</div>
+        <div class="info-row"><span class="info-label">Band</span> Derived from frequency — shown as band name (e.g. "20 m").</div>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-body">
+          <div class="callout-title">Serial port permissions on Linux</div>
+          <p>On Linux, your user account may not have permission to open <code>/dev/ttyUSB0</code> by default.
+          Add yourself to the <code>dialout</code> group and log out/in:</p>
+          <p><code>sudo usermod -aG dialout $USER</code></p>
+          <p>On Raspberry Pi OS this is not needed — the default <code>pi</code> user already has dialout access.</p>
+        </div>
+      </div>
+
+      <nav class="page-nav">
+        <a href="pota-sota.html" class="page-nav-link">
+          <span class="nav-arrow">←</span>
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Previous</span>
+            <span class="page-nav-title">POTA / SOTA / WWFF</span>
+          </div>
+        </a>
+        <a href="wsjt-ft8.html" class="page-nav-link next">
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Next</span>
+            <span class="page-nav-title">WSJT-X / FT8</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WSJT-X / FT8 — OpenHamClock Manual</title>
+  <meta name="description" content="Connecting WSJT-X, FT8, PSKReporter, and RBN to OpenHamClock — local UDP, cloud relay, and WSPR heatmaps.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="mobile-header"></div>
+  <div id="sidebar"></div>
+
+  <main id="main">
+    <div class="content-wrap">
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">WSJT-X / FT8</span>
+      </div>
+
+      <header class="page-header">
+        <div class="page-header-top">
+          <div>
+            <span class="page-number">Section 11</span>
+            <h1 class="page-title"><span class="title-icon">📻</span> WSJT-X / FT8</h1>
+          </div>
+          <span class="badge badge-feature">Feature</span>
+        </div>
+        <p class="page-tagline">Live FT8, FT4, JT65, and WSPR decodes from WSJT-X or JTDX — plus PSKReporter coverage maps and RBN skimmer reports — all in real time.</p>
+      </header>
+
+      <!-- ── Mode primer ────────────────────────────────── -->
+      <h2>A Quick Primer on Weak-Signal Modes</h2>
+      <p>
+        <strong>WSJT-X</strong> is a free program by Nobel laureate Joe Taylor, K1JT, that implements
+        a family of highly efficient digital modes designed to make contacts in conditions where
+        voice or CW would be impossible. The most popular are:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mode</th><th>Period</th><th>Sensitivity</th><th>Best use</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>FT8</strong></td>
+              <td>15 seconds</td>
+              <td>–21 dB SNR</td>
+              <td>DX, casual contacts, POTA/SOTA; currently the most popular HF mode worldwide</td>
+            </tr>
+            <tr>
+              <td><strong>FT4</strong></td>
+              <td>7.5 seconds</td>
+              <td>–17 dB SNR</td>
+              <td>Contests — faster exchanges than FT8</td>
+            </tr>
+            <tr>
+              <td><strong>JT65</strong></td>
+              <td>60 seconds</td>
+              <td>–25 dB SNR</td>
+              <td>EME (moonbounce), very long-distance HF</td>
+            </tr>
+            <tr>
+              <td><strong>WSPR</strong></td>
+              <td>2 minutes</td>
+              <td>–28 dB SNR</td>
+              <td>Propagation beaconing and mapping — no QSOs, just signal reports</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        OpenHamClock receives the decoded messages from WSJT-X in real time and displays them
+        as a live scrolling decode list — the same decodes you see in WSJT-X's own window,
+        but integrated into your dashboard alongside DX spots, space weather, and the world map.
+      </p>
+
+      <!-- ── Local UDP setup ────────────────────────────── -->
+      <h2 id="local">Local UDP Setup</h2>
+      <p>
+        If WSJT-X and OpenHamClock run on the <strong>same machine</strong>, or on machines on
+        the <strong>same LAN</strong>, use the direct UDP connection. This is the simplest and
+        most reliable option — no extra software, no accounts, sub-second latency.
+      </p>
+
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Enable WSJT-X integration in OpenHamClock</div>
+            <p>In your <code>.env</code> file, set:</p>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">.env</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="key">WSJTX_ENABLED</span>=<span class="value">true</span>
+<span class="key">WSJTX_UDP_PORT</span>=<span class="value">2237</span></pre>
+            </div>
+            <p>Restart the server after saving.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Configure WSJT-X to send UDP packets</div>
+            <p>In WSJT-X: <strong>File → Settings → Reporting</strong> tab.</p>
+            <ul>
+              <li>Enable <strong>UDP Server</strong></li>
+              <li>Set <strong>UDP Server hostname</strong> to the IP address of the machine running OpenHamClock
+              (use <code>127.0.0.1</code> if it is the same machine)</li>
+              <li>Set <strong>UDP Server port number</strong> to <code>2237</code></li>
+              <li>Enable <strong>Accept UDP requests</strong></li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Verify the connection</div>
+            <p>Start a WSJT-X decode session. Decodes should appear in the OpenHamClock
+            WSJT-X panel within seconds. The panel header shows a green dot when receiving data.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="figure">
+        <div class="figure-placeholder">
+          <span class="placeholder-icon">📻</span>
+          <span class="placeholder-label">Screenshot: WSJT-X panel with live FT8 decodes</span>
+          <span style="font-size:0.75rem;opacity:0.5;">assets/img/screenshots/wsjtx-panel.png</span>
+        </div>
+        <div class="figure-caption">
+          The WSJT-X panel showing live FT8 decodes. Each row shows time, SNR, frequency offset,
+          callsigns, grid square, and distance. CQ calls are highlighted. Clicking a callsign
+          draws the path on the map; clicking the frequency tunes the rig.
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">WSJT-X on a different LAN machine</div>
+          <p>If WSJT-X runs on your shack PC and OpenHamClock runs on a Raspberry Pi,
+          set the UDP destination in WSJT-X to the Pi's IP address (e.g. <code>192.168.1.100</code>).
+          Make sure the Pi's firewall allows UDP port 2237. Everything else is the same.</p>
+        </div>
+      </div>
+
+      <!-- ── Cloud relay ────────────────────────────────── -->
+      <h2 id="relay">Cloud Relay Agent</h2>
+      <p>
+        If OpenHamClock runs in the cloud (Railway, VPS, etc.) it cannot receive raw UDP packets
+        from your local WSJT-X — the internet is in the way. The <strong>wsjtx-relay</strong>
+        agent solves this: it runs on your shack PC, captures WSJT-X UDP decodes locally,
+        and forwards them to your cloud OpenHamClock instance over secure HTTPS.
+      </p>
+
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Set a relay key in your cloud <code>.env</code></div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">.env (cloud instance)</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="key">WSJTX_ENABLED</span>=<span class="value">true</span>
+<span class="key">WSJTX_RELAY_KEY</span>=<span class="value">my-secret-relay-key</span>   <span class="comment"># any random string</span></pre>
+            </div>
+            <p>Redeploy the cloud instance after saving.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Download wsjtx-relay to your shack PC</div>
+            <p>Get the latest binary from the <a href="https://github.com/accius/openhamclock/releases" target="_blank" rel="noopener">releases page</a>:
+            <code>wsjtx-relay-win.exe</code>, <code>wsjtx-relay-macos</code>, or <code>wsjtx-relay-linux</code>.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Run the relay agent</div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">bash</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">$ </span>./wsjtx-relay \
+    --target https://your-instance.railway.app \
+    --key my-secret-relay-key \
+    --listen-port 2237</pre>
+            </div>
+            <p>Configure WSJT-X to send UDP to <code>127.0.0.1:2237</code> as normal.
+            The relay intercepts packets locally and forwards them to the cloud.</p>
+          </div>
+        </li>
+      </ol>
+
+      <!-- ── PSKReporter ────────────────────────────────── -->
+      <h2>PSKReporter</h2>
+      <p>
+        <a href="https://pskreporter.info" target="_blank" rel="noopener">PSKReporter</a> is a
+        global crowdsourced network of software-defined radio receivers that automatically
+        report every digital mode signal they decode — FT8, FT4, JT65, PSK31, WSPR, and more.
+        It is one of the best propagation analysis tools available to amateurs.
+      </p>
+      <p>
+        OpenHamClock shows PSKReporter data in two tabs:
+      </p>
+
+      <div class="info-box">
+        <div class="info-row">
+          <span class="info-label">TX tab</span>
+          Who is hearing <em>your</em> signal right now. Every station that decoded your callsign
+          in the last 15 minutes appears on the map with a line from your QTH to theirs.
+          This is the best real-time propagation check — is your signal actually reaching Europe? Asia? South America?
+        </div>
+        <div class="info-row">
+          <span class="info-label">RX tab</span>
+          Who <em>you</em> are hearing — all callsigns your receiver has decoded, plotted on the map.
+          Useful for seeing the reach of your antenna and receiver setup.
+        </div>
+      </div>
+
+      <p>
+        Data arrives via <strong>MQTT WebSocket</strong> in near-real-time (sub-second updates)
+        when the MQTT connection is available, or falls back to the HTTP API polled every 2 minutes.
+        No configuration needed — PSKReporter uses your callsign from <code>.env</code> automatically.
+      </p>
+
+      <!-- ── RBN ────────────────────────────────────────── -->
+      <h2>Reverse Beacon Network (RBN)</h2>
+      <p>
+        The <a href="https://www.reversebeacon.net" target="_blank" rel="noopener">Reverse Beacon Network</a>
+        is a global network of automated CW and RTTY receivers (skimmers) that listen 24/7 and report
+        every CQ call they hear. Think of it as a DX cluster for CW — the difference is that RBN spots
+        are generated automatically by software, not posted manually by operators.
+      </p>
+      <p>
+        OpenHamClock shows RBN skimmer locations on the world map and lists recent spots in the
+        RBN panel. This is particularly useful for:
+      </p>
+      <ul>
+        <li><strong>CW contesting</strong> — see which skimmers heard your CQ and at what SNR, confirming your signal is getting out.</li>
+        <li><strong>Propagation checking</strong> — see active CW stations at a glance without wading through a full DX cluster feed.</li>
+        <li><strong>DXpedition spotting</strong> — rare expeditions operating CW are spotted immediately by multiple skimmers worldwide.</li>
+      </ul>
+
+      <!-- ── WSPR heatmap ───────────────────────────────── -->
+      <h2>WSPR Heatmap</h2>
+      <p>
+        <strong>WSPR</strong> (Weak Signal Propagation Reporter, pronounced "whisper") is a beacon mode
+        where stations transmit a low-power signal containing their callsign, grid square, and power level.
+        Receiving stations report to <a href="https://www.wsprnet.org" target="_blank" rel="noopener">WSPRnet</a>,
+        building a global database of who heard whom at what time.
+      </p>
+      <p>
+        The OpenHamClock WSPR heatmap overlays this data on the world map as a colour-coded
+        signal density layer — brighter areas indicate more WSPR reports, giving an instant visual
+        snapshot of HF propagation conditions on the selected band. It is particularly beautiful
+        to watch during a grey-line pass: you can literally see the propagation paths light up
+        as the terminator sweeps across the globe.
+      </p>
+
+      <nav class="page-nav">
+        <a href="rig-bridge.html" class="page-nav-link">
+          <span class="nav-arrow">←</span>
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Previous</span>
+            <span class="page-nav-title">Rig Bridge</span>
+          </div>
+        </a>
+        <a href="themes-profiles.html" class="page-nav-link next">
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Next</span>
+            <span class="page-nav-title">Themes &amp; Profiles</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>

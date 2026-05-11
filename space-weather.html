@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space Weather — OpenHamClock Manual</title>
+  <meta name="description" content="Understanding space weather in OpenHamClock: SFI, K-index, sunspot number, band conditions, and solar panels.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="mobile-header"></div>
+  <div id="sidebar"></div>
+
+  <main id="main">
+    <div class="content-wrap">
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">Space Weather</span>
+      </div>
+
+      <header class="page-header">
+        <div class="page-header-top">
+          <div>
+            <span class="page-number">Section 07</span>
+            <h1 class="page-title"><span class="title-icon">🌤️</span> Space Weather &amp; Band Conditions</h1>
+          </div>
+          <span class="badge badge-feature">Feature</span>
+        </div>
+        <p class="page-tagline">The sun controls HF propagation. Learn to read SFI, K-index, and sunspot numbers — and let OpenHamClock tell you which bands are open before you even key up.</p>
+      </header>
+
+      <!-- ── Why it matters ─────────────────────────────── -->
+      <h2>Why Space Weather Matters for Radio</h2>
+      <p>
+        Every HF contact you make relies on radio waves bouncing off the <strong>ionosphere</strong> —
+        layers of charged particles in the upper atmosphere, sitting roughly 60–600 km above the Earth.
+        The ionosphere is created and sustained by solar radiation. When the sun is active, the
+        ionosphere is stronger and higher frequencies propagate further. When the sun is disturbed —
+        by solar flares or geomagnetic storms — the ionosphere can be disrupted or completely absorbed,
+        wiping out entire bands for hours or days.
+      </p>
+      <p>
+        Three numbers summarise solar conditions at any moment: <strong>SFI</strong>,
+        <strong>K-index</strong>, and <strong>SSN</strong>. OpenHamClock displays all three in real time
+        with colour-coded indicators so you can read them at a glance from across the shack.
+      </p>
+
+      <!-- ── SFI ────────────────────────────────────────── -->
+      <h2>Solar Flux Index (SFI)</h2>
+      <p>
+        The <strong>Solar Flux Index</strong> (also written as F10.7) measures the intensity of solar
+        radio emission at 10.7 cm wavelength. It is the best single-number proxy for solar activity
+        and HF propagation potential.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>SFI value</th><th>Solar activity</th><th>HF propagation</th></tr></thead>
+          <tbody>
+            <tr><td style="color:#ef4444;font-weight:700;">Below 70</td><td>Very low — solar minimum</td><td>Higher bands (10–15 m) mostly closed. 40–80 m reliable regionally.</td></tr>
+            <tr><td style="color:#f97316;font-weight:700;">70 – 100</td><td>Low to moderate</td><td>20 m usually open. 15 m opens at solar noon. 10 m sporadic.</td></tr>
+            <tr><td style="color:#eab308;font-weight:700;">100 – 150</td><td>Moderate — rising cycle</td><td>15 m opens reliably. 10 m starts to come alive for long-haul paths.</td></tr>
+            <tr><td style="color:#22c55e;font-weight:700;">150 – 200</td><td>High — solar maximum</td><td>10 m wide open. Worldwide contacts on 10 and 12 m are common.</td></tr>
+            <tr><td style="color:#3b82f6;font-weight:700;">Above 200</td><td>Very high — solar maximum peak</td><td>6 m can open globally. 10 m is outstanding. Magic band conditions.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">SFI and the solar cycle</div>
+          <p>SFI follows the roughly 11-year solar cycle. We are currently in Solar Cycle 25,
+          which reached a stronger-than-predicted solar maximum around 2024–2025.
+          Values above 200 are possible near the peak — conditions not seen since Cycle 23 in 2000–2001.
+          The 30-day SFI history chart in the Solar panel shows where we are in the cycle.</p>
+        </div>
+      </div>
+
+      <!-- ── K-index ────────────────────────────────────── -->
+      <h2>K-index (Kp) — Geomagnetic Activity</h2>
+      <p>
+        The <strong>K-index</strong> (or planetary Kp index) measures disturbances in Earth's magnetic
+        field caused by solar wind and coronal mass ejections (CMEs). Unlike SFI — where higher is
+        better — a <em>high</em> K-index is bad news for HF.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Kp value</th><th>Condition</th><th>Effect on HF</th><th>Visible aurora</th></tr></thead>
+          <tbody>
+            <tr><td style="color:#22c55e;font-weight:700;">0 – 1</td><td>Quiet</td><td>Excellent — full ionospheric support</td><td>No</td></tr>
+            <tr><td style="color:#84cc16;font-weight:700;">2 – 3</td><td>Unsettled</td><td>Good — minimal degradation</td><td>Very high latitudes only</td></tr>
+            <tr><td style="color:#eab308;font-weight:700;">4</td><td>Active</td><td>Minor polar path degradation</td><td>Above 60° latitude</td></tr>
+            <tr><td style="color:#f97316;font-weight:700;">5</td><td>Minor storm (G1)</td><td>Polar paths unreliable; mid-lat HF affected</td><td>Above 50° latitude</td></tr>
+            <tr><td style="color:#ef4444;font-weight:700;">6 – 7</td><td>Moderate storm (G2–G3)</td><td>Significant HF degradation, blackouts possible at high latitudes</td><td>Above 45° latitude</td></tr>
+            <tr><td style="color:#7c3aed;font-weight:700;">8 – 9</td><td>Severe/Extreme storm (G4–G5)</td><td>HF blackout across most of globe. Radio may be useless.</td><td>Visible at mid-latitudes</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">High K-index is not always bad</div>
+          <p>While a high Kp wrecks HF, it can <em>open</em> VHF and UHF via aurora backscatter.
+          When Kp reaches 5 or above, check the Aurora map layer and look for other operators
+          on 2 m CW using aurora scatter — a unique propagation mode with a characteristic
+          buzzing, watery sound.</p>
+        </div>
+      </div>
+
+      <!-- ── SSN ─────────────────────────────────────────── -->
+      <h2>Sunspot Number (SSN)</h2>
+      <p>
+        The <strong>Sunspot Number</strong> (SSN, also called the Wolf Number) is a daily count of
+        sunspot groups visible on the solar disc. Sunspots are cooler, magnetically active regions
+        that correlate strongly with solar flux. More sunspots = higher SFI = better HF propagation.
+      </p>
+      <p>
+        SSN is slower-moving than SFI — it changes over days and weeks, not hours.
+        It is best used as a medium-term trend indicator: is the sun becoming more or less active
+        this month? The 30-day history chart shows this clearly.
+      </p>
+
+      <!-- ── Band Conditions panel ──────────────────────── -->
+      <h2>Band Conditions Panel</h2>
+      <p>
+        Rather than asking you to interpret raw numbers, the <strong>Band Conditions panel</strong>
+        translates SFI, K-index, and time-of-day into simple per-band indicators: open, marginal, or closed.
+        Data comes from NOAA's N0NBH solar indices service.
+      </p>
+
+      <div class="figure">
+        <div class="figure-placeholder">
+          <span class="placeholder-icon">📊</span>
+          <span class="placeholder-label">Screenshot: Band Conditions panel</span>
+          <span style="font-size:0.75rem;opacity:0.5;">assets/img/screenshots/band-conditions.png</span>
+        </div>
+        <div class="figure-caption">
+          The Band Conditions panel. Each HF band gets a coloured indicator: green = open,
+          yellow = marginal, red = closed. Day and night conditions are shown separately.
+        </div>
+      </div>
+
+      <p>Each band shows two indicators: <strong>Day</strong> and <strong>Night</strong>.</p>
+      <ul>
+        <li><strong>Day</strong> — conditions during local daylight hours, when F2 propagation is active.</li>
+        <li><strong>Night</strong> — conditions after dark, when the D-layer absorption disappears and lower bands extend their range dramatically.</li>
+      </ul>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-body">
+          <div class="callout-title">VHF indicators</div>
+          <p>The Band Conditions panel also includes VHF+ indicators for
+          <strong>E-skip</strong> (sporadic-E ionisation, opening 6 m and sometimes 2 m to
+          continental distances) and <strong>Aurora</strong> (as described above).
+          These are less predictable than HF conditions but well worth watching in summer months.</p>
+        </div>
+      </div>
+
+      <!-- ── Solar panel (4 views) ──────────────────────── -->
+      <h2>Solar Panel — Four Views</h2>
+      <p>
+        The <strong>Solar panel</strong> cycles through four different views automatically,
+        or you can click to step through them manually:
+      </p>
+
+      <div class="info-box">
+        <div class="info-row">
+          <span class="info-label">1 — Solar Image</span>
+          The latest EUV/X-ray image of the sun from NASA/SDO. Sunspot groups appear as dark spots.
+          Active regions glow brightly in UV. Updated every 15 minutes.
+        </div>
+        <div class="info-row">
+          <span class="info-label">2 — Solar Indices</span>
+          A 30-day history chart of SFI, SSN, and K-index. Excellent for spotting trends —
+          is the cycle rising? Did a storm just pass? Are we on the downward slope?
+        </div>
+        <div class="info-row">
+          <span class="info-label">3 — X-ray Flux</span>
+          Real-time X-ray flux from GOES satellites. X-ray flares appear as sharp spikes.
+          A strong X-class flare can cause a sudden ionospheric disturbance (SID) —
+          HF blackout on the sunlit side of Earth within minutes of the flare.
+        </div>
+        <div class="info-row">
+          <span class="info-label">4 — Lunar Phase</span>
+          Current moon phase, illumination percentage, rise and set times, and distance.
+          Useful for EME (Earth-Moon-Earth) operators — perigee (closest approach) means
+          a stronger path and lower path loss.
+        </div>
+      </div>
+
+      <!-- ── Propagation predictions ────────────────────── -->
+      <h2>Propagation Predictions</h2>
+      <p>
+        The <strong>Propagation panel</strong> (separate from Band Conditions) uses the
+        <strong>ITU-R P.533-14</strong> HF propagation model — the same international standard used
+        by broadcast engineers worldwide — to predict per-band reliability percentages for your
+        specific path to a selected DX target.
+      </p>
+      <p>
+        When you click a DX spot and open the DX Location panel, the propagation panel updates
+        to show predicted signal reliability on each band for the <em>current time of day</em>
+        on the <em>specific path</em> from your QTH to the DX location.
+        This is not a generic "band open/closed" estimate — it is a point-to-point model
+        corrected with real ionosonde data from the nearest measurement station.
+      </p>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">Using propagation predictions in practice</div>
+          <p>Suppose you see a rare Pacific DX spot on 15 m. Click it, and the propagation panel
+          shows 15 m at 82% reliability for that path right now, 20 m at 65%, and 12 m at 91%.
+          Consider calling on 12 m — the model says it is your strongest bet even if the cluster
+          spot was on 15 m. Most DXpeditions operate on multiple bands simultaneously.</p>
+        </div>
+      </div>
+
+      <nav class="page-nav">
+        <a href="dx-cluster.html" class="page-nav-link">
+          <span class="nav-arrow">←</span>
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Previous</span>
+            <span class="page-nav-title">DX Cluster</span>
+          </div>
+        </a>
+        <a href="satellites.html" class="page-nav-link next">
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Next</span>
+            <span class="page-nav-title">Satellites</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>

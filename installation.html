@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Installation — OpenHamClock Manual</title>
+  <meta name="description" content="Full installation guide for OpenHamClock: Raspberry Pi, Docker, Windows, macOS, Linux, and cloud deployment.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="mobile-header"></div>
+  <div id="sidebar"></div>
+
+  <main id="main">
+    <div class="content-wrap">
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">Installation</span>
+      </div>
+
+      <header class="page-header">
+        <div class="page-header-top">
+          <div>
+            <span class="page-number">Section 03</span>
+            <h1 class="page-title"><span class="title-icon">🖥️</span> Installation</h1>
+          </div>
+          <span class="badge badge-install">Install</span>
+        </div>
+        <p class="page-tagline">Platform-by-platform guides: Raspberry Pi kiosk, Docker, Windows, macOS/Linux, and Railway cloud. Pick your target and follow the steps.</p>
+      </header>
+
+      <!-- ── Hardware requirements ──────────────────────── -->
+      <h2>Hardware Requirements</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Platform</th><th>Minimum</th><th>Recommended</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Raspberry Pi</strong></td>
+              <td>Pi 3B+ · 1 GB RAM · 8 GB SD</td>
+              <td>Pi 4/5 · 4 GB RAM · 32 GB SD</td>
+              <td>Pi 3B+ is usable but will feel slow with many panels open</td>
+            </tr>
+            <tr>
+              <td><strong>Desktop / laptop</strong></td>
+              <td>Any dual-core · 2 GB RAM</td>
+              <td>Any modern CPU · 4 GB RAM</td>
+              <td>Windows, macOS, Linux all supported</td>
+            </tr>
+            <tr>
+              <td><strong>Docker host</strong></td>
+              <td>Docker 24+ · 512 MB free RAM</td>
+              <td>Docker 25+ · 1 GB free RAM</td>
+              <td>Works on NAS boxes (Synology, QNAP) too</td>
+            </tr>
+            <tr>
+              <td><strong>Cloud (Railway)</strong></td>
+              <td>Free tier (512 MB)</td>
+              <td>Starter plan (1 GB)</td>
+              <td>Free tier usually sufficient for one user</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box">
+        <div class="info-row"><span class="info-label">Node.js version</span> 20 or later required. v22 LTS strongly recommended.</div>
+        <div class="info-row"><span class="info-label">OS for Pi</span> Raspberry Pi OS Bookworm (12) or Trixie (13). 64-bit recommended.</div>
+        <div class="info-row"><span class="info-label">Browser (client)</span> Any modern browser: Chrome, Firefox, Safari, Edge. No plugins needed.</div>
+      </div>
+
+      <!-- ── Raspberry Pi ────────────────────────────────── -->
+      <h2 id="raspberry-pi">Raspberry Pi</h2>
+      <p>
+        The Raspberry Pi is the most popular way to run OpenHamClock as a dedicated shack display.
+        The setup script handles everything: Node.js, the app itself, a systemd service for auto-start,
+        and optionally a full kiosk mode that launches Chromium fullscreen on boot.
+      </p>
+
+      <h3>Pi with kiosk display (recommended)</h3>
+      <p>Use this if you have a monitor connected directly to the Pi and want a standalone clock/dashboard that
+      powers up automatically with the shack.</p>
+
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Flash your SD card with Raspberry Pi OS Bookworm</div>
+            <p>Use <a href="https://www.raspberrypi.com/software/" target="_blank" rel="noopener">Raspberry Pi Imager</a>.
+            Choose <strong>Raspberry Pi OS (64-bit)</strong> with desktop. Enable SSH in the Advanced Options if you want remote access.
+            A 32 GB card is plenty.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Boot the Pi and open a terminal</div>
+            <p>Either connect a keyboard/monitor directly, or SSH in:
+            <code>ssh pi@raspberrypi.local</code></p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Run the setup script with kiosk mode</div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">bash</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">$ </span>curl -fsSL https://raw.githubusercontent.com/accius/openhamclock/main/scripts/setup-pi.sh | bash -s -- --kiosk</pre>
+            </div>
+            <p>The script will install Node.js, clone the repository, install dependencies, create a systemd service,
+            and configure Chromium to launch fullscreen on boot. It takes about 5–10 minutes on a Pi 4.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Edit your <code>.env</code> file</div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">bash</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">$ </span>nano ~/openhamclock/.env</pre>
+            </div>
+            <p>Set at minimum: <code>CALLSIGN</code> and <code>LOCATOR</code>. Save with <kbd>Ctrl+O</kbd>, exit with <kbd>Ctrl+X</kbd>.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Reboot</div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">bash</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">$ </span>sudo reboot</pre>
+            </div>
+            <p>The Pi will boot directly into the OpenHamClock dashboard fullscreen. No login screen, no desktop — just the clock.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="figure">
+        <div class="figure-placeholder">
+          <span class="placeholder-icon">🖥️</span>
+          <span class="placeholder-label">Screenshot: Pi kiosk mode — fullscreen dashboard on boot</span>
+          <span style="font-size:0.75rem;opacity:0.5;">assets/img/screenshots/pi-kiosk.png</span>
+        </div>
+        <div class="figure-caption">
+          A Raspberry Pi 4 running OpenHamClock in kiosk mode. Chromium launches fullscreen on boot with
+          no visible OS chrome. The dashboard is ready within about 20 seconds of power-on.
+        </div>
+      </div>
+
+      <h3>Pi as a headless server</h3>
+      <p>Use this if you want to run OpenHamClock on a Pi tucked away in the shack and access it from
+      other devices (a laptop, tablet, or second monitor) over your LAN.</p>
+
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="prompt">$ </span>curl -fsSL https://raw.githubusercontent.com/accius/openhamclock/main/scripts/setup-pi.sh | bash -s -- --server</pre>
+      </div>
+
+      <p>Then add <code>HOST=0.0.0.0</code> to <code>.env</code> so the server listens on all interfaces.
+      Access it from any device on your network at <code>http://&lt;pi-ip&gt;:3000</code>.</p>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">Find your Pi's IP address</div>
+          <p>Run <code>hostname -I</code> on the Pi, or check your router's DHCP table.
+          For a permanent address, set a static IP in your router's DHCP reservation list using the Pi's MAC address.</p>
+        </div>
+      </div>
+
+      <h3>Managing the systemd service</h3>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="comment"># Check status</span>
+<span class="prompt">$ </span>sudo systemctl status openhamclock
+
+<span class="comment"># View live logs</span>
+<span class="prompt">$ </span>sudo journalctl -u openhamclock -f
+
+<span class="comment"># Restart after editing .env</span>
+<span class="prompt">$ </span>sudo systemctl restart openhamclock
+
+<span class="comment"># Stop</span>
+<span class="prompt">$ </span>sudo systemctl stop openhamclock</pre>
+      </div>
+
+      <!-- ── Docker ─────────────────────────────────────── -->
+      <h2 id="docker">Docker / Docker Compose</h2>
+      <p>
+        The Docker image is the cleanest way to run a permanent local install on any machine.
+        Everything is bundled — no Node.js, no npm, no system-level dependencies.
+      </p>
+
+      <h3>Quick start with Docker Compose</h3>
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Create a project folder and download the Compose file</div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">bash</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">$ </span>mkdir openhamclock && cd openhamclock
+<span class="prompt">$ </span>curl -fsSL https://raw.githubusercontent.com/accius/openhamclock/main/docker-compose.yml -o docker-compose.yml</pre>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Create your <code>.env</code> file</div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">.env</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="key">CALLSIGN</span>=<span class="value">K0CJH</span>
+<span class="key">LOCATOR</span>=<span class="value">DM79</span>
+<span class="comment"># HOST=0.0.0.0   ← uncomment for LAN access</span></pre>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Start in detached mode</div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">bash</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">$ </span>docker compose up -d</pre>
+            </div>
+          </div>
+        </li>
+      </ol>
+
+      <h3>Ports exposed by the container</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Port</th><th>Protocol</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>3000</code></td><td>TCP</td><td>Web interface — open this in your browser</td></tr>
+            <tr><td><code>2237</code></td><td>UDP</td><td>WSJT-X / JTDX decoder input</td></tr>
+            <tr><td><code>12060</code></td><td>UDP</td><td>N1MM+ logger integration</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-body">
+          <div class="callout-title">WSJT-X and the container</div>
+          <p>WSJT-X sends UDP packets to the local machine. If OpenHamClock runs in Docker, you
+          need to ensure port <code>2237/udp</code> is forwarded correctly in <code>docker-compose.yml</code>
+          (it is by default). If WSJT-X runs on a <em>different</em> machine than the Docker host,
+          use the <a href="wsjt-ft8.html#relay">WSJT-X relay agent</a> instead.</p>
+        </div>
+      </div>
+
+      <h3>Updating Docker</h3>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="prompt">$ </span>docker compose pull
+<span class="prompt">$ </span>docker compose up -d</pre>
+      </div>
+
+      <!-- ── Windows ────────────────────────────────────── -->
+      <h2 id="windows">Windows</h2>
+      <p>
+        The recommended Windows path is <strong>Docker Desktop</strong> — follow the Docker section above.
+        Docker Desktop gives you a native GUI for managing the container and handles WSL2 automatically.
+      </p>
+
+      <h3>Native Windows install (no Docker)</h3>
+      <p>If you prefer not to use Docker, OpenHamClock runs natively on Windows via Node.js.</p>
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Install Node.js v22 LTS</div>
+            <p>Download the Windows installer from <a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a>.
+            Accept all defaults. Restart your terminal after installation.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Install Git for Windows</div>
+            <p>Download from <a href="https://git-scm.com/download/win" target="_blank" rel="noopener">git-scm.com</a> if not already installed.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Clone and start</div>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">PowerShell</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="prompt">PS> </span>git clone https://github.com/accius/openhamclock.git
+<span class="prompt">PS> </span>cd openhamclock
+<span class="prompt">PS> </span>npm ci
+<span class="prompt">PS> </span>npm start</pre>
+            </div>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-body">
+          <div class="callout-title">Rig control serial ports on Windows</div>
+          <p>Windows COM ports appear as <code>COM3</code>, <code>COM4</code>, etc. In your <code>.env</code>,
+          set the rig serial port as <code>RIG_SERIAL_PORT=COM3</code> (replace with your actual port number,
+          visible in Device Manager under "Ports").</p>
+        </div>
+      </div>
+
+      <h3>Electron desktop app</h3>
+      <p>OpenHamClock can also run as a native desktop window (no browser needed) using Electron:</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="prompt">$ </span>npm run electron</pre>
+      </div>
+
+      <!-- ── macOS / Linux ──────────────────────────────── -->
+      <h2 id="linux">macOS &amp; Linux</h2>
+      <p>Same steps as Option C in the Quick Start. For a permanent background service on Linux:</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="prompt">$ </span>curl -fsSL https://raw.githubusercontent.com/accius/openhamclock/main/scripts/setup-linux.sh | bash -s -- --service</pre>
+      </div>
+      <p>This installs OpenHamClock and registers a systemd service that starts automatically on boot.
+      Manage it the same way as the Pi service (see above).</p>
+
+      <!-- ── Railway cloud ──────────────────────────────── -->
+      <h2 id="cloud">Cloud Deployment — Railway</h2>
+      <p>
+        <a href="https://railway.app" target="_blank" rel="noopener">Railway</a> is the easiest way to run
+        OpenHamClock in the cloud — accessible from anywhere, no home server required.
+        The free tier is usually sufficient for a single-user personal instance.
+      </p>
+
+      <ol class="step-list">
+        <li>
+          <div class="step-body">
+            <div class="step-title">Fork the repository on GitHub</div>
+            <p>Visit <a href="https://github.com/accius/openhamclock" target="_blank" rel="noopener">github.com/accius/openhamclock</a>
+            and click <strong>Fork</strong>. You need your own copy so Railway can deploy it.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Create a Railway project from your fork</div>
+            <p>Log in at <a href="https://railway.app" target="_blank" rel="noopener">railway.app</a>,
+            click <strong>New Project → Deploy from GitHub repo</strong>, and select your fork.
+            Railway detects the <code>Dockerfile</code> automatically.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Set environment variables in Railway dashboard</div>
+            <p>In the Railway service settings, go to <strong>Variables</strong> and add at minimum:</p>
+            <div class="code-block">
+              <div class="code-block-header">
+                <span class="code-block-lang">Railway Variables</span>
+                <button class="copy-btn">Copy</button>
+              </div>
+              <pre><span class="key">CALLSIGN</span>=<span class="value">K0CJH</span>
+<span class="key">LOCATOR</span>=<span class="value">DM79</span>
+<span class="key">HOST</span>=<span class="value">0.0.0.0</span>
+<span class="key">TRUST_PROXY</span>=<span class="value">true</span></pre>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <div class="step-title">Deploy and open the public URL</div>
+            <p>Railway provides a public <code>*.railway.app</code> URL. Open it in your browser — your dashboard is live.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-body">
+          <div class="callout-title">WSJT-X from cloud</div>
+          <p>A cloud deployment cannot receive UDP packets from your local WSJT-X.
+          Use the <strong>WSJT-X relay agent</strong> — a small program that runs on your shack PC,
+          captures WSJT-X UDP decodes, and forwards them securely to your cloud instance over HTTPS.
+          See <a href="wsjt-ft8.html#relay">WSJT-X / FT8 → Relay Agent</a> for setup.</p>
+        </div>
+      </div>
+
+      <!-- ── Updating ───────────────────────────────────── -->
+      <h2 id="updating">Updating &amp; Upgrading</h2>
+      <p>OpenHamClock follows a weekly release cycle. Updates are always backwards-compatible —
+      your <code>.env</code> is never overwritten.</p>
+
+      <h3>Git clone install (Pi / Linux / macOS)</h3>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="prompt">$ </span>cd ~/openhamclock
+<span class="prompt">$ </span>bash scripts/update.sh</pre>
+      </div>
+      <p>The update script: backs up your <code>.env</code>, pulls the latest code, rebuilds the frontend,
+      restores your settings, and restarts the service.</p>
+
+      <h3>Docker</h3>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="prompt">$ </span>docker compose pull && docker compose up -d</pre>
+      </div>
+
+      <h3>Auto-update (optional)</h3>
+      <p>Add these to your <code>.env</code> to have OpenHamClock check for updates automatically:</p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-lang">.env</span>
+          <button class="copy-btn">Copy</button>
+        </div>
+        <pre><span class="key">AUTO_UPDATE_ENABLED</span>=<span class="value">true</span>
+<span class="key">AUTO_UPDATE_INTERVAL_MINUTES</span>=<span class="value">60</span>
+<span class="key">AUTO_UPDATE_EXIT_AFTER</span>=<span class="value">true</span>   <span class="comment"># systemd/pm2 will restart after update</span></pre>
+      </div>
+
+      <nav class="page-nav">
+        <a href="quickstart.html" class="page-nav-link">
+          <span class="nav-arrow">←</span>
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Previous</span>
+            <span class="page-nav-title">Quick Start</span>
+          </div>
+        </a>
+        <a href="configuration.html" class="page-nav-link next">
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Next</span>
+            <span class="page-nav-title">Configuration</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>

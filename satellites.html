@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Satellites — OpenHamClock Manual</title>
+  <meta name="description" content="Tracking amateur radio satellites in OpenHamClock: pass predictions, Doppler, ground tracks, and footprints.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="mobile-header"></div>
+  <div id="sidebar"></div>
+
+  <main id="main">
+    <div class="content-wrap">
+
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">Satellites</span>
+      </div>
+
+      <header class="page-header">
+        <div class="page-header-top">
+          <div>
+            <span class="page-number">Section 08</span>
+            <h1 class="page-title"><span class="title-icon">🛰️</span> Satellites</h1>
+          </div>
+          <span class="badge badge-feature">Feature</span>
+        </div>
+        <p class="page-tagline">Real-time orbital tracking for 40+ amateur satellites. Know exactly when the next pass is, where to point your antenna, and how much Doppler shift to expect.</p>
+      </header>
+
+      <!-- ── Overview ───────────────────────────────────── -->
+      <h2>Overview</h2>
+      <p>
+        Amateur radio satellites — sometimes called <em>AMSAT birds</em> — are small spacecraft
+        that carry transponders, digipeaters, or beacons accessible to licensed amateurs.
+        Working a DX station via a linear transponder satellite is one of the most satisfying
+        operating experiences in the hobby: your signal goes up, bounces off a spacecraft
+        hundreds of kilometres overhead, and comes back down on the other side of the horizon.
+      </p>
+      <p>
+        OpenHamClock calculates satellite positions in real time using the
+        <strong>SGP4</strong> orbital propagation model — the same algorithm used by
+        space agencies worldwide. Positions update every <strong>5 seconds</strong>.
+        No internet connection is needed once the Two-Line Elements (TLEs) have been downloaded;
+        everything is computed locally.
+      </p>
+
+      <!-- ── Satellites panel ───────────────────────────── -->
+      <h2>The Satellites Panel</h2>
+      <p>
+        The panel lists all tracked satellites with their current status. For each satellite you see:
+      </p>
+
+      <div class="info-box">
+        <div class="info-row"><span class="info-label">Satellite name</span> Common name (e.g. <em>SO-50</em>, <em>ISS</em>, <em>AO-7</em>). Click to highlight it on the map.</div>
+        <div class="info-row"><span class="info-label">Elevation</span> Current elevation above your horizon in degrees. Negative = below horizon (not workable). Above 0° = in the sky.</div>
+        <div class="info-row"><span class="info-label">Azimuth</span> Compass bearing to the satellite right now, in degrees true. This is where to point your antenna.</div>
+        <div class="info-row"><span class="info-label">Range</span> Slant range (distance) from your QTH to the satellite in km. Lower range = stronger signal.</div>
+        <div class="info-row"><span class="info-label">Doppler shift</span> Frequency offset in Hz caused by the satellite's velocity. See below for how to apply this.</div>
+        <div class="info-row"><span class="info-label">Next pass</span> Time until the next visible pass begins (elevation above your minimum threshold).</div>
+        <div class="info-row"><span class="info-label">Pass duration</span> How long the satellite will be above your horizon during the next pass.</div>
+        <div class="info-row"><span class="info-label">Max elevation</span> Peak elevation of the next pass. Higher = longer contact window and stronger signal.</div>
+      </div>
+
+      <div class="figure">
+        <div class="figure-placeholder">
+          <span class="placeholder-icon">🛰️</span>
+          <span class="placeholder-label">Screenshot: Satellites panel + ground track on map</span>
+          <span style="font-size:0.75rem;opacity:0.5;">assets/img/screenshots/satellites-panel.png</span>
+        </div>
+        <div class="figure-caption">
+          The Satellites panel (left) with SO-50 currently above the horizon at 34° elevation.
+          The world map shows the ground track ahead (dashed line) and the current footprint
+          (shaded circle) — the entire area that can currently hear this satellite.
+        </div>
+      </div>
+
+      <!-- ── Map view ───────────────────────────────────── -->
+      <h2>Map Overlays</h2>
+
+      <h3>Ground track</h3>
+      <p>
+        A dashed line on the world map shows where the satellite's sub-satellite point
+        will be over the next orbit. The track curves because the Earth rotates beneath
+        the orbital plane — successive passes are shifted westward by about 22° for a
+        90-minute low-Earth orbit satellite.
+      </p>
+
+      <h3>Footprint</h3>
+      <p>
+        A shaded circle centred on the satellite's current position shows the
+        <strong>footprint</strong> — the area on Earth that has a line-of-sight path to
+        the satellite and can therefore communicate through it <em>right now</em>.
+        If your home QTH marker is inside the footprint circle, the satellite is above
+        your horizon and workable.
+      </p>
+      <p>
+        The footprint size depends on the satellite's altitude: the ISS at ~400 km has
+        a smaller footprint than AO-7 at ~1460 km. Higher orbit = wider coverage.
+      </p>
+
+      <!-- ── Doppler shift ──────────────────────────────── -->
+      <h2>Understanding Doppler Shift</h2>
+      <p>
+        As a satellite approaches, its radio signals are compressed to a slightly higher
+        frequency. As it recedes, they stretch to a lower frequency. This is the
+        <strong>Doppler effect</strong> — the same reason a passing train sounds higher pitched
+        as it approaches and lower as it passes.
+      </p>
+      <p>
+        For a satellite on 145 MHz, the Doppler shift can reach ±3 kHz at the start and end
+        of a pass. On 435 MHz (70 cm), it can reach ±10 kHz. This means:
+      </p>
+      <ul>
+        <li>At pass start (satellite approaching): receive frequency is higher than nominal — tune <em>up</em> slightly.</li>
+        <li>At pass end (satellite receding): receive frequency is lower — tune <em>down</em>.</li>
+        <li>At maximum elevation (satellite directly overhead): Doppler is near zero.</li>
+      </ul>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">Doppler with Rig Bridge</div>
+          <p>If you have Rig Bridge configured, OpenHamClock can apply Doppler correction to your radio
+          automatically during a pass. Enable <strong>Settings → Satellites → Auto Doppler</strong>
+          and select the satellite. Your radio's VFO will track the correction in real time —
+          you just listen and talk, no manual tuning needed.</p>
+        </div>
+      </div>
+
+      <!-- ── Supported satellites ───────────────────────── -->
+      <h2>Supported Satellites</h2>
+      <p>
+        OpenHamClock tracks 40+ amateur radio satellites. TLEs are fetched from
+        <a href="https://celestrak.org" target="_blank" rel="noopener">CelesTrak</a> and
+        updated automatically every 24 hours to maintain accuracy. Here is a selection of
+        the most commonly used satellites:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Satellite</th><th>OSCAR №</th><th>Orbit</th><th>Mode / Use</th></tr></thead>
+          <tbody>
+            <tr><td><strong>ISS</strong></td><td>—</td><td>~400 km LEO</td><td>APRS digipeater (145.825 MHz), occasional voice contacts</td></tr>
+            <tr><td><strong>SO-50</strong></td><td>SaudiSat-1C</td><td>~667 km LEO</td><td>FM voice transponder. 145.850 MHz up, 436.795 MHz down. Very active.</td></tr>
+            <tr><td><strong>AO-91</strong></td><td>RadFxSat</td><td>~670 km LEO</td><td>FM transponder. 435.250 MHz up, 145.960 MHz down.</td></tr>
+            <tr><td><strong>AO-92</strong></td><td>Fox-1D</td><td>~699 km LEO</td><td>FM transponder. Multiple uplink options including L-band.</td></tr>
+            <tr><td><strong>AO-7</strong></td><td>AMSAT OSCAR 7</td><td>~1460 km LEO</td><td>Linear transponder (Mode B/A). Launched 1974 — still working!</td></tr>
+            <tr><td><strong>FO-29</strong></td><td>Fuji OSCAR 29</td><td>~1320 km LEO</td><td>Linear SSB/CW transponder. Popular for DX via satellite.</td></tr>
+            <tr><td><strong>XW-2 series</strong></td><td>CAS-3A–H</td><td>~520 km LEO</td><td>Multiple CW/linear transponders from China.</td></tr>
+            <tr><td><strong>OSCAR-100</strong></td><td>QO-100</td><td>35,786 km GEO</td><td>Geostationary. 2.4 GHz up, 10.489 GHz down. Covers Europe/Africa/Asia 24/7.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-note">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-body">
+          <div class="callout-title">QO-100 is always visible</div>
+          <p>Unlike LEO satellites that pass in 10-minute windows, QO-100 is geostationary —
+          it sits fixed over the equator at 25.9°E. From Europe, Africa, and most of Asia it is
+          always above the horizon and always workable. No pass timing needed;
+          just point your dish at the same spot in the sky every time.
+          OpenHamClock shows QO-100 as a stationary marker on the map.</p>
+        </div>
+      </div>
+
+      <!-- ── Configuration ──────────────────────────────── -->
+      <h2>Configuration</h2>
+
+      <h3>Selecting which satellites to track</h3>
+      <p>
+        Open <strong>Settings → Satellites</strong> to choose which satellites appear in the panel
+        and on the map. Deselect satellites you never work to keep the panel focused.
+        The ISS and SO-50 are enabled by default; the full list of 40+ can be toggled individually.
+      </p>
+
+      <h3>Minimum elevation threshold</h3>
+      <p>
+        Set the minimum elevation for "in pass" indication. The default is <strong>5°</strong>.
+        If you have a clear horizon, 5° is fine. If trees or buildings obstruct your horizon
+        up to 15° or 20°, raise the threshold so OpenHamClock does not report passes that
+        your antenna cannot actually reach.
+      </p>
+
+      <h3>Pass alerts</h3>
+      <p>
+        Enable <strong>Settings → Satellites → Pass alert</strong> to receive an audio and
+        visual notification a configurable number of minutes before a pass begins.
+        This gives you time to get to the radio, deploy a portable yagi, or prepare for a
+        scheduled contact.
+      </p>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">Getting started with satellite operating</div>
+          <p>SO-50 is the best first satellite for newcomers. A simple handheld with
+          a rubber duck antenna can often make contacts through it on a high pass.
+          Set a 5-minute pre-pass alert in OpenHamClock, step outside with your HT
+          at AOS (acquisition of signal), point roughly toward the satellite's azimuth,
+          and listen for activity on 436.795 MHz. You will be surprised how easy it is.</p>
+        </div>
+      </div>
+
+      <nav class="page-nav">
+        <a href="space-weather.html" class="page-nav-link">
+          <span class="nav-arrow">←</span>
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Previous</span>
+            <span class="page-nav-title">Space Weather</span>
+          </div>
+        </a>
+        <a href="pota-sota.html" class="page-nav-link next">
+          <div class="page-nav-meta">
+            <span class="page-nav-label">Next</span>
+            <span class="page-nav-title">POTA / SOTA / WWFF</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>
